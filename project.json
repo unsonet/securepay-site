@@ -1,0 +1,246 @@
+{
+  "name": "securepay-site",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/securepay-site/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/apps/securepay-site/browser",
+        "index": "apps/securepay-site/src/index.html",
+        "main": "apps/securepay-site/src/main.ts",
+        "polyfills": [
+          "apps/securepay-site/src/polyfills.ts"
+        ],
+        "tsConfig": "apps/securepay-site/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "libs",
+            "node_modules"
+          ]
+        },
+        "assets": [
+          "apps/securepay-site/src/favicon.ico",
+          "apps/securepay-site/src/assets",
+          {
+            "glob": "**/*",
+            "input": "apps/securepay-site/public"
+          }
+        ],
+        "styles": [
+          "apps/securepay-site/src/styles.scss",
+          "apps/securepay-site/src/assets/css/lib/securePayAdmin.css"
+        ],
+        "scripts": [
+          "node_modules/jquery/dist/jquery.js",
+          "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
+          "node_modules/bootstrap-select/js/bootstrap-select.js",
+          "node_modules/number-format.js/lib/format.min.js",
+          "node_modules/rrule/dist/es5/rrule.min.js",
+          "node_modules/summernote/dist/summernote-bs5.min.js",
+          "node_modules/summernote-cleaner/summernote-cleaner.js",
+          "node_modules/jquery-ui/ui/widget.js",
+          "node_modules/jquery-ui/ui/data.js",
+          "node_modules/jquery-ui/ui/scroll-parent.js",
+          "node_modules/jquery-ui/ui/widgets/mouse.js",
+          "node_modules/jquery-ui/ui/widgets/sortable.js"
+        ],
+        "fileReplacements": [
+          {
+            "replace": "apps/securepay-site/src/environments/environment.ts",
+            "with": "apps/securepay-site/src/environments/environment.prod.ts"
+          }
+        ],
+        "optimization": {
+          "scripts": true,
+          "styles": {
+            "minify": true,
+            "inlineCritical": false
+          }
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "4mb",
+              "maximumError": "6mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "8kb",
+              "maximumError": "20kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/securepay-site/src/environments/environment.ts",
+              "with": "apps/securepay-site/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all",
+          "optimization": {
+            "scripts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            }
+          }
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "promo": {
+          "outputPath": "dist/apps/securepay-site/promo",
+          "main": "apps/securepay-site/src/main.promo.ts",
+          "vendorChunk": false,
+          "commonChunk": false,
+          "optimization": {
+            "scripts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            }
+          },
+          "extractLicenses": false,
+          "sourceMap": false,
+          "namedChunks": false
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "securepay-site:build:production"
+        },
+        "development": {
+          "buildTarget": "securepay-site:build:development"
+        },
+        "promo": {
+          "buildTarget": "securepay-site:build:promo"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "securepay-site:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "apps/securepay-site/jest.config.ts"
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "securepay-site:build",
+        "spa": true
+      }
+    },
+    "server": {
+      "dependsOn": [
+        "build"
+      ],
+      "executor": "@angular-devkit/build-angular:server",
+      "options": {
+        "outputPath": "dist/apps/securepay-site/server",
+        "main": "apps/securepay-site/src/server.ts",
+        "tsConfig": "apps/securepay-site/tsconfig.server.json",
+        "inlineStyleLanguage": "scss"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "media",
+          "sourceMap": false
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "sourceMap": true,
+          "extractLicenses": false,
+          "vendorChunk": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve-ssr": {
+      "executor": "@angular-devkit/build-angular:ssr-dev-server",
+      "configurations": {
+        "development": {
+          "browserTarget": "securepay-site:build:development",
+          "serverTarget": "securepay-site:server:development"
+        },
+        "production": {
+          "browserTarget": "securepay-site:build:production",
+          "serverTarget": "securepay-site:server:production"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "prerender": {
+      "executor": "@angular-devkit/build-angular:prerender",
+      "options": {
+        "routes": [
+          "/"
+        ]
+      },
+      "configurations": {
+        "development": {
+          "browserTarget": "securepay-site:build:development",
+          "serverTarget": "securepay-site:server:development"
+        },
+        "production": {
+          "browserTarget": "securepay-site:build:production",
+          "serverTarget": "securepay-site:server:production"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "pack:promo": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "node scripts/pack.js --input \"./dist/apps/securepay-site/promo\" --name \"{{name}}-promo-{{version}}\" "
+          }
+        ]
+      }
+    },
+    "build-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run securepay-site:build:production",
+          "nx run securepay-site:server:production",
+          "nx run securepay-site:build:promo"
+        ]
+      },
+      "parallel": false
+    }
+  }
+}

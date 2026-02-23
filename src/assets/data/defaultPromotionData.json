@@ -1,0 +1,145 @@
+{
+  "id": 4770,
+  "name": "Test Promotion - Max Attendees",
+  "hotel": {
+    "id": 2480,
+    "name": "SecurePay Demo Hotel",
+    "currency": "AED",
+    "currencyFormat": "#,####,##0.00"
+  },
+  "department": {
+    "id": 1494,
+    "name": "Default"
+  },
+  "displayTemplate": {
+    "id": 2755,
+    "name": "Default Template",
+    "description": "The default Promotions display template",
+    "forPromotionType": "promotion"
+  },
+  "promotionDates": {
+    "recurringDates": {
+      "id": 4809,
+      "firstDates": [
+        "2026-05-15"
+      ],
+      "lastDate": "2026-05-21",
+      "recurrencePeriod": "days",
+      "recurrenceInterval": 1,
+      "enabledDays":[
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+        "SATURDAY"
+      ]
+    }
+  },
+  "maxAttendeesPerDate": 10,
+  "promotionText": "<p>Testing of \"max attendees\" values which is set to 10 per promotion date.</p>",
+  "contactName": "Phil Duhs",
+  "contactEmail": "phil.duhs@securepay.ae",
+  "contactPhone": "+971555555555",
+  "notifyEmails": [
+    "hotelManager@securepay.ae"
+  ],
+  "categories": [
+    {
+      "id": 4772,
+      "name": "Category One",
+      "description": "<p>Category 1.</p>",
+      "showHeadings": true,
+      "questions": [
+        {
+          "dateQuestion": {
+            "id": 4773,
+            "title": "Date",
+            "description": "<p>Date question...</p>",
+            "showHeadings": true,
+            "mandatory": false,
+            "basePrices": {
+              "monday": 200,
+              "tuesday": 200,
+              "wednesday": 200,
+              "thursday": 200,
+              "friday": 200,
+              "saturday": 200,
+              "sunday": 200
+            },
+            "pricingMethod": "perDay",
+            "selectMultipleType": "arbitraryDates",
+            "buyMultiple": {
+              "maximum": 0,
+              "minimum": 1
+            },
+            "attendeeCountIncrement":2,
+            "tags": {
+              "addsToAttendeeCount": true,
+              "isAttendanceDate": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4774,
+      "name": "Personal Info.",
+      "description": "Required personal information:",
+      "showHeadings": true,
+      "questions": [
+        {
+          "shortTextQuestion": {
+            "id": 4775,
+            "title": "First Name",
+            "description": "Your first name",
+            "showHeadings": true,
+            "mandatory": true,
+            "contentType": "text"
+          }
+        },
+        {
+          "shortTextQuestion": {
+            "id": 4776,
+            "title": "Last Name",
+            "description": "Your surname",
+            "showHeadings": true,
+            "mandatory": true,
+            "contentType": "text"
+          }
+        },
+        {
+          "shortTextQuestion": {
+            "id": 4777,
+            "title": "Email",
+            "description": "Your email address",
+            "showHeadings": true,
+            "mandatory": true,
+            "contentType": "emailAddress"
+          }
+        },
+        {
+          "shortTextQuestion": {
+            "id": 4778,
+            "title": "Phone",
+            "description": "Your phone number",
+            "showHeadings": true,
+            "mandatory": false,
+            "contentType": "text"
+          }
+        }
+      ]
+    }
+  ],
+  "customCSS": ".title{color:red}",
+  "customJS": "console.log('customJS injected')",
+  "uuid": "26a416cd-905b-4276-a814-b6c0fd41cd21",
+  "enabled": true,
+  "createdBy": {
+    "id": 2551,
+    "username": "securePayDemoHotel_pd",
+    "firstName": "Phil",
+    "lastName": "Duhs"
+  },
+  "promotionType": "promotion",
+  "promotionLink": "https://securepay-demo-hotel.dev.securepay.ae:8443/promotion/view/26a416cd-905b-4276-a814-b6c0fd41cd21"
+}

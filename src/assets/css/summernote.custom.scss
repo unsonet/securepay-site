@@ -1,0 +1,146 @@
+/* @import url("summernote/dist/summernote.css"); */
+@import url("summernote/dist/summernote-bs5.min.css");
+
+/*original*/
+
+/* 
+@font-face {
+  font-family: "summernote";
+  font-style: normal;
+  font-weight: 400;
+  font-display: auto;
+  src: url(./resources/css/promotions/fonts/summernote.eot);
+  src: url(./resources/css/promotions/fonts/summernote.eot?#iefix) format("embedded-opentype"), url(./resources/css/promotions/fonts/summernote.woff2) format("woff2"), url(./resources/css/promotions/fonts/summernote.woff) format("woff"), url(./resources/css/promotions/fonts/summernote.ttf) format("truetype");
+} */
+
+.note-icon-menu-check::before {
+  /* content: "\ea21"; */
+  content: none;
+}
+
+.note-editor.note-frame .note-status-output,
+.note-editor.note-airframe .note-status-output {
+  /* display: block; */
+  /* color: #000; */
+  /* border-top: 1px solid #e2e2e2 */
+  display: none;
+  color: #ccc;
+  padding: 8px;
+}
+
+.note-editor.note-frame .note-statusbar,
+.note-editor.note-airframe .note-statusbar {
+  height: 100%;
+}
+
+.note-editor.note-frame .note-statusbar .note-resizebar,
+.note-editor.note-airframe .note-statusbar .note-resizebar {
+  height: 100%;
+}
+
+.note-popover .popover-content,
+.note-toolbar {
+  padding: 0 0 5px 5px !important;
+}
+
+.note-btn-group .note-btn {
+  font-size: 0.8rem;
+  border-color: #ccc !important;
+  &.dropdown-toggle::after{
+    vertical-align: 0.2em;
+  }
+}
+
+
+.note-color-row {
+  display: flex;
+}
+
+.note-popover .popover-content .note-para .note-dropdown-menu,
+.note-toolbar .note-para .note-dropdown-menu {
+  /* min-width: 216px; */
+  min-width: auto;
+}
+
+.note-popover .popover-content .note-dropdown-menu.note-check a i,
+.note-toolbar .note-dropdown-menu.note-check a i {
+  /* color: #00bfff; */
+  /* visibility: hidden */
+  color: #000;
+  visibility: visible;
+}
+
+.note-popover .popover-content .note-color-palette,
+.note-toolbar .note-color-palette {
+  width: max-content;
+}
+
+.note-popover .popover-content .note-color-palette div .note-color-btn,
+.note-toolbar .note-color-palette div .note-color-btn {
+  margin: 0 !important;
+  border: 1px solid #ccc;
+}
+
+/*custom*/
+.note-dropdown-menu.dropdown-menu > li i {
+  font-style: normal !important;
+}
+
+.note-dropdown-menu.dropdown-menu > li a {
+  font-style: normal !important;
+  width: 100% !important;
+  display: block !important;
+  padding: 3px 20px !important;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+
+.note-dropdown-menu.dropdown-menu > li a:focus,
+.note-dropdown-menu.dropdown-menu > li a:hover {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+
+.note-form-group {
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.note-form-group .note-form-label {
+  width: 70px;
+  margin-right: 10px;
+}
+
+.note-form-group + .note-form-group {
+  margin-top: 10px;
+}
+
+.note-editor .modal {
+  .modal-header {
+    justify-content: initial;
+    .modal-title {
+      text-decoration: none !important;
+      width: 100%;
+    }
+    .close {
+      order: 1;
+    }
+  }
+}
+
+.sn-checkbox-open-in-new-window {
+  display: none !important;
+}
+.link-dialog .close {
+  display: none !important;
+}
+.note-group-image-url {
+  width: 100%;
+}
+.note-group-image-url .note-image-url {
+  width: 100% !important;
+}

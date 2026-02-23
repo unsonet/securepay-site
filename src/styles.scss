@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+/* Importing Bootstrap SCSS file. */
+//@import "./assets/css/lib/bootstrap.min.css"; /*old bootstrap 3.4.1*/
+// @import "bootstrap/scss/bootstrap.scss";
+// @import "bootstrap-select/sass/bootstrap-select.scss";
+
+// @import "./assets/css/bootstrap.custom.scss";
+@import "securepay-styles/src/styles.scss";
+@import "./assets/css/summernote.custom.scss";
+// @import "./assets/css/air-datepicker.custom.scss";
+// @import "./assets/css/bootstrap-select.custom.scss";
+@import "securepay-preview/src/styles.scss";
+
+//@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css");
+//@import url("https://fonts.googleapis.com/css?family=PT+Sans");
+@import "bootstrap-glyphicons/src/styles.scss";
+
+
+html {
+  overflow: hidden;
+  height: -webkit-fill-available;
+  font-size: 14px;
+}
+
+body {
+  overflow: auto;
+  //font-family: 'PT Sans', sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  height: 100%;
+}
+
+app-root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.xsm-min-width {
+  min-width: 70px !important;
+}
+.md-max-width {
+  max-width: 200px !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+// .loading-animation{
+//   background-image: url('../src/assets/img/loadingIcon.gif');
+//   background-size: 50px;
+//   background-repeat: no-repeat;
+//   background-position: center;
+// }
+
+.form-inline label {
+  justify-content: normal;
+}
+
+.btn-dark:hover {
+  color: #fff !important;
+}

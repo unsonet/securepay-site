@@ -1,0 +1,30 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3 col-sm-8 col-sm-offset-2">
+            <div class="panel panel-inverse">
+                <div class="panel-heading">
+                    <h3>SecurePay Log In</h3>
+                </div>
+                <div class="panel-body">
+                    <form name="signin" [formGroup]="form" (ngSubmit)="submit()">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" class="form-control" placeholder="Username" data-error="Please enter your email address" required="" autofocus="" formControlName="email">
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Password" data-error="Please enter your password" required="" formControlName="password">
+                                <div class="help-block with-errors"></div>
+                            </div>
+                            <label for="remember-me" class="glyphy"><input type="checkbox" id="remember-me" name="remember-me"><span class="glyphicon glyphicon-unchecked"></span> Remember Me</label>
+                            <button class="btn btn-md btn-success" type="submit">Sign In</button>
+                        </form>
+                    </div>
+                <div class="panel-footer">
+                    <a id="forgottenPassword" [routerLink]="['/forgotten_password']">Forgotten Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1307 @@
+<div id="promotion-page-wrapper" #el *ngIf="!!promotionService.initialisationData && !!defaultPromotionData && !!promotionDataGroup">
+
+
+  <!-- Page Content -->
+  <div class="container-fluid">
+    <!-- <div class="row">
+      <div class="col-sm-12">
+        <h2 class="page-header">New Promotion</h2>
+      </div>
+    </div> -->
+
+    <div class="row row-contains-fixed-700 flex-nowrap pt-0 p-2 gap-2">
+      <div class="col-fixed-700 col-md-auto">
+        <form id="newPromotionForm" role="form" class="form-inline" action="/admin/manualEmails/createManualEmail.html" method="post" enctype="multipart/form-data" novalidate="true">
+          <div class="panel panel-dark col m-0">
+            <div class="panel-heading panel-heading__tabs">
+              <!-- Nav tabs -->
+              <ul class="nav nav-tabs" role="tablist" id="general-tabs">
+                <li [ngClass]="{'active': isActive(tab1)}" (click)="changeTab(tab1)" #tab1>
+                  <a role="tab" aria-controls="tab-information" data-toggle="tab" data-target="#tab-information">
+                    <h3 class="panel-title">Basic Information</h3>
+                  </a>
+                </li>
+                <li [ngClass]="{'active': isActive(tab2)}" (click)="changeTab(tab2)" #tab2>
+                  <a role="tab" aria-controls="tab-categories" data-toggle="tab" data-target="#tab-categories">
+                    <h3 class="panel-title">Categories</h3>
+                  </a>
+                </li>
+                <li [ngClass]="{'active': isActive(tab3)}" (click)="changeTab(tab3)" #tab3>
+                  <a role="tab" aria-controls="tab-questions" data-toggle="tab" data-target="#tab-questions">
+                    <h3 class="panel-title">Questions</h3>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="panel-body" [formGroup]="promotionDataGroup">
+
+              <div class="tab-content">
+                <div role="tabpanel" class="tab-pane" [ngClass]="{'active': activeTab == 'tab-information' }" id="tab-information">
+
+                  <div class="row">
+
+                    <div class="col-xs-12 form-container">
+
+                      <div class="col form-group">
+                        <label>Promotion Name:</label>
+                        <input formControlName="name" type="text" class="form-control lg" name="name" placeholder="Promotion name…" [ngClass]="{'is-invalid': promotionDataGroup.get('name').invalid && !promotionDataGroup.get('name').untouched}" required>
+                      </div>
+
+                      <div class="col form-group">
+                        <label>Department:</label>
+                        <select formControlName="department" class="form-control" name="department" [compareWith]="compareByID" *bootstrapSelect="promotionService.getDepartmentTemplates(promotionDataGroup.controls?.department.value?.id)" (change)="departmentChangeHandler($event)" [value]="promotionDataGroup?.controls?.department.value">
+                          <option *ngFor="let option of templateDepartments; let i = index" [ngValue]="option" [selected]="promotionService.containsDepartmentId(initialisationData?.promotionAddEditFormInitialisationData.templateDepartments, promotionDataGroup.controls?.department.value?.id) ? promotionDataGroup.controls?.department.value?.id == option?.id : defaultPromotionData.displayTemplate?.id ? promotionService.hasDepartmentTemplate(option?.id, defaultPromotionData.displayTemplate?.id) : i == 0 ? true : null">
+                            {{option.name}}
+                          </option>
+                        </select>
+                      </div>
+
+                      <div class="col form-group" *ngIf="promotionService.getDepartmentTemplates(promotionDataGroup?.controls?.department.value?.id).length > 1">
+                        <label>Template:</label>
+                        <select formControlName="displayTemplate" class="form-control" name="displayTemplate" [compareWith]="compareByID" *bootstrapSelect="promotionDataGroup.controls?.department.value" #displayTemplateSelect>
+                          <option *ngFor="let option of promotionService.getDepartmentTemplates(promotionDataGroup.controls?.department.value?.id); let i = index;" [ngValue]="{id: option?.id, name:option?.name, description: option?.description}">{{option.name}}</option>
+                        </select>
+                      </div>
+
+                      <!-- <div class="col form-group">
+                            <label>Base Price:</label>
+                            <input type="number" name="basePrice" placeholder="AED" class="form-control text-end" min="1" pattern="^[\d,.]+$" step="any" required>
+                          </div> -->
+
+                      <div class="col form-group">
+                        <label>Has Taxes:</label>
+                        <div class="radio-menu">
+                          <div class="radio col">
+                            <label>
+                              <input type="radio" name="hasTaxes" [formControl]="promotionDataGroup.controls?.hasTaxes" [value]="false" checked>
+                              <span class="title">No</span>
+                            </label>
+                          </div>
+                          <div class="radio col">
+                            <label>
+                              <input type="radio" name="hasTaxes" [formControl]="promotionDataGroup.controls?.hasTaxes" [value]="true">
+                              <span class="title">Yes</span>
+                              <div class="radio-menu-container" formArrayName="taxes">
+                                <div *ngFor="let item of promotionDataGroup.controls?.taxes?.controls; let i = index" [formGroup]="promotionDataGroup.controls?.taxes?.controls[i]" class="radio-menu-item col">
+
+                                  <ng-container *ngIf="promotionDataGroup.get('taxes')['controls'][i]?.controls?.tax">
+                                    <span class="note form-group" style="flex:auto" formGroupName="tax">
+                                      <input type="text" name="taxName" formControlName="name" class="form-control" [value]="item?.value?.tax?.name" [ngClass]="{'is-invalid': promotionDataGroup.get('taxes')['controls'][i]?.controls?.tax.get('name').invalid && !promotionDataGroup.get('taxes')['controls'][i]?.controls?.tax.get('name').untouched}">
+                                      <span class="note-title">Tax Name</span>
+                                    </span>
+                                    <span class="note">
+                                      <input type="number" name="taxAmount" min="0" formControlName="amount" [value]="item.value?.amount" step="any" class="form-control text-end">
+                                      <span class="note-title text-end">Tax Rate/Amt</span>
+                                    </span>
+                                    <span class="note" formGroupName="tax" style="flex-basis: 75px!important; flex:none;">
+                                      <select name="taxType" class="form-control xsm-min-width w-100" [ngClass]="{'auto-width': false}" formControlName="taxType" [value]="item?.value?.tax?.taxType" *bootstrapSelect="promotionDataGroup.controls?.hasTaxes.value">
+                                        <option value="percentage">%</option>
+                                        <option value="fixed">{{false ? promotionDataGroup?.controls.hotel.controls.currency.value : 'Fixed'}}</option>
+                                        <!-- <option value="perUnit">Per Unit</option> -->
+                                      </select>
+                                    </span>
+                                    <div class="controls">
+                                      <button type="button" class="glyphicon glyphicon-minus-sign remove" (click)="removeFormArrayControl(promotionDataGroup.controls?.taxes, i)" [disabled]="promotionDataGroup.controls?.taxes.controls.length == 1"></button>
+                                      <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="addFormArrayControl(promotionDataGroup.controls?.taxes)" [disabled]="promotionDataGroup.controls?.taxes.invalid"></button>
+                                    </div>
+                                  </ng-container>
+
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- <div class="col form-group">
+                            <label>Allow Multiple:</label>
+                            <div class="radio-menu">
+                              <div class="radio col">
+                                <label>
+                                  <input type="radio" name="allowMultiple" [value]="true">
+                                  <span class="title">Yes</span>
+                                  <div class="radio-menu-container">
+                                    <div class="radio-menu-item col">
+                                      <label class="title text-end">Minimum:</label>
+                                      <div><input type="number" name="minimum" min="1" value="1" class="form-control">
+                                      </div>
+                                    </div>
+                                    <div class="radio-menu-item col">
+                                      <label class="title text-end">Maximum:</label>
+                                      <div style="z-index: 1;">
+                                        <input class="unlimited-input form-control" type="text" readonly value="No Limit">
+                                        <input type="number" name="maximum" min="0" value="0" class="form-control">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </label>
+                              </div>
+                              <div class="radio col">
+                                <label>
+                                  <input type="radio" name="allowMultiple" [value]="false" checked>
+                                  <span class="title">No</span>
+                                </label>
+                              </div>
+                            </div>
+                          </div> -->
+
+                      <div class="col form-group" formGroupName="promotionDates">
+                        <label>Promotion Date:</label>
+                        <div class="radio-menu">
+                          <div class="radio col">
+                            <label>
+                              <input type="radio" name="promotionDate" value="noDate" [formControl]="promotionDataGroup.controls?.promotionDate">
+                              <span class="title">No Date</span>
+                            </label>
+                          </div>
+                          <!-- <div class="radio col">
+                                <label>
+                                  <input type="radio" name="promotionDate" value="single">
+                                  <span class="title">Single</span>
+                                  <div class="radio-menu-container">
+                                    <div class="radio-menu-item col">
+                                      <label>
+                                        <input type="text" name="singleDate" class="dateInput form-control icon-right">
+                                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </label>
+                              </div> -->
+                          <div class="radio col">
+                            <label formGroupName="staticDates">
+                              <input type="radio" name="promotionDate" value="specific" [formControl]="promotionDataGroup.controls?.promotionDate" (change)="updatePossibleDates()">
+                              <span class="title">Specific Dates</span>
+                              <!--multiple-->
+                              <div class="radio-menu-container" formArrayName="dates">
+                                <div class="radio-menu-item col" *ngFor="let item of promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates?.controls; let i = index">
+                                  <span class="note form-group">
+                                    <label>
+                                      <input type="text" name="staticDate" [formControl]="item ? item : null" class="dateInput form-control icon-right" [value]="item?.value" [ngClass]="{'is-invalid': promotionDataGroup.get('promotionDates').get('staticDates').get('dates')['controls'][i].invalid && !promotionDataGroup.get('promotionDates').get('staticDates').get('dates')['controls'][i].untouched}" autocomplete="off" [dateOptions]="specificDatesDPOptions" [attr.data-disabled-dates]="filterArray(promotionDataGroup.get('promotionDates')?.get('staticDates')?.get('dates')?.value, promotionDataGroup.get('promotionDates')?.get('staticDates')?.get('dates')?.value[i]).join(',')" [airDatepicker]="filterArray(promotionDataGroup.get('promotionDates')?.get('staticDates')?.get('dates')?.value, promotionDataGroup.get('promotionDates')?.get('staticDates')?.get('dates')?.value[i]).join(',')">
+                                      <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                    </label>
+                                  </span>
+                                  <!-- <span class="note">
+                                        <input type="number" name="discount" value="0" class="form-control icon-right text-end">
+                                        <span class="note-title text-end">Discount / Surcharge</span>
+                                      </span> -->
+                                  <div class="controls">
+                                    <button type="button" class="glyphicon glyphicon-minus-sign remove hi" (click)="removeFormArrayControl(promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates, i)" [disabled]="promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates.controls.length < 2"></button>
+                                    <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="addFormArrayControl(promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates)" [disabled]="promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates.invalid"></button>
+                                  </div>
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                          <div class="radio col">
+                            <label formGroupName="recurringDates">
+                              <input type="radio" name="promotionDate" value="recurring" [formControl]="promotionDataGroup.controls?.promotionDate">
+                              <span class="title">Recurring</span>
+
+                              <div class="radio-menu-container" style="margin-top: 0px; z-index: 1; width: max-content; left:20px;">
+                                <div class="radio-menu-item col">
+                                  <label>
+                                    <input type="radio" name="endRecurrence" value="limited" [formControl]="promotionDataGroup.controls?.endRecurrence" (change)="endRecurrenceHandler({target:lastDate}, firstDate, lastDate);updatePossibleDates()">
+                                    <span class="title">Limited</span>
+                                  </label>
+                                </div>
+                                <div class="radio-menu-item col">
+                                  <label>
+                                    <input type="radio" name="endRecurrence" value="unlimited" [formControl]="promotionDataGroup.controls?.endRecurrence" (change)="endRecurrenceHandler({target:lastDate}, firstDate, lastDate); manageFormControl('', promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.lastDate);updatePossibleDates()">
+                                    <span class="title">Unlimited</span>
+                                  </label>
+                                </div>
+                              </div>
+
+                              <div class="radio-menu-container">
+                                <div class="radio-menu-item col">
+                                  <label class="title text-end">First Date:</label>
+                                  <label formArrayName="firstDates">
+                                    <input type="text" name="firstDate" formControlName="0" [value]="promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.firstDates?.controls[0].value || (getFormattedSelectedDates(firstDate)[0] || '')" class="dateInput form-control icon-right left" [attr.data-min-days]="promotionDataGroup.controls?.endRecurrence.value == 'unlimited' ? '1' : '2'" [attr.data-max-days]="promotionDataGroup.controls?.endRecurrence.value == 'unlimited' ? '1' : '2'" [ngClass]="{'is-invalid': promotionDataGroup.get('promotionDates').get('recurringDates').get('firstDates')['controls'][0].invalid && !promotionDataGroup.get('promotionDates').get('recurringDates').get('firstDates')['controls'][0].untouched,
+                                    'multiple': promotionDataGroup.controls?.endRecurrence.value == 'limited'
+                                  }" autocomplete="off" (change)="recurringDatesHandler($event, firstDate, lastDate)" #firstDate [airDatepicker]="promotionDataGroup.controls?.endRecurrence.value">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                  </label>
+                                  <div class="controls">
+                                    <button type="button" class="glyphicon glyphicon-remove-sign" (click)="recurringDatesClear(firstDate, lastDate); promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.firstDates?.controls[0].setValue('');promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.lastDate.setValue('')" [disabled]="!promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.firstDates?.controls[0].value"></button>
+                                  </div>
+                                </div>
+                                <div class="radio-menu-item col">
+                                  <label class="title text-end">Last Date:</label>
+                                  <label>
+                                    <input type="text" name="lastDate" formControlName="lastDate" class="dateInput form-control icon-right left" [attr.data-min-days]="promotionDataGroup.controls?.endRecurrence.value == 'unlimited' ? '1' : '2'" [attr.data-max-days]="promotionDataGroup.controls?.endRecurrence.value == 'unlimited' ? '1' : '2'" [value]="promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.lastDate.value || (getFormattedSelectedDates(lastDate)[1] || '')" [attr.disabled]="promotionDataGroup.controls?.endRecurrence.value == 'unlimited' ? true : null" [attr.placeholder]="promotionDataGroup.controls?.endRecurrence.value == 'unlimited' ? 'No Limit' : null " [ngClass]="{'is-invalid': promotionDataGroup.get('promotionDates').get('recurringDates').get('lastDate').invalid && !promotionDataGroup.get('promotionDates').get('recurringDates').get('lastDate').untouched,
+                                    'multiple': promotionDataGroup.controls?.endRecurrence.value == 'limited'
+                                  }" autocomplete="off" #lastDate (change)="recurringDatesHandler($event, firstDate, lastDate)" (onDatepickerInit)="null" [airDatepicker]="promotionDataGroup.controls?.endRecurrence.value">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                  </label>
+                                </div>
+                                <div class="radio-menu-item col">
+                                  <label class="title text-end">Repeat Every:</label>
+                                  <label style="gap:5px; display:flex; align-items: flex-start;">
+                                    <input type="number" name="recurrenceInterval" formControlName="recurrenceInterval" min="1" value="1" class="form-control sm" (change)="updatePossibleDates()" [value]="promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.recurrenceInterval.value">
+                                    <select class="form-control" name="recurrencePeriod" formControlName="recurrencePeriod" (change)="updatePossibleDates()" [value]="promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.recurrencePeriod?.value" *bootstrapSelect="promotionDataGroup.controls?.promotionDate.value">
+                                      <option value="days" selected>Days</option>
+                                      <option value="weeks">Weeks</option>
+                                      <option value="months">Months</option>
+                                      <option value="years">Years</option>
+                                    </select>
+                                  </label>
+                                </div>
+                                <div class="radio-menu-item col pt-1">
+                                  <label class="title text-end">Include Days:</label>
+                                  <div class="include-days-menu" [ngClass]="{'is-invalid': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays.invalid}">
+                                    <div class="include-days-menu_item" [ngClass]="{'active': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays?.value.includes('sunday'.toUpperCase())}" (click)="enabledDaysHandler('sunday')">S</div>
+                                    <div class="include-days-menu_item" [ngClass]="{'active': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays?.value.includes('monday'.toUpperCase())}" (click)="enabledDaysHandler('monday')">M</div>
+                                    <div class="include-days-menu_item" [ngClass]="{'active': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays?.value.includes('tuesday'.toUpperCase())}" (click)="enabledDaysHandler('tuesday')">T</div>
+                                    <div class="include-days-menu_item" [ngClass]="{'active': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays?.value.includes('wednesday'.toUpperCase())}" (click)="enabledDaysHandler('wednesday')">W</div>
+                                    <div class="include-days-menu_item" [ngClass]="{'active': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays?.value.includes('thursday'.toUpperCase())}" (click)="enabledDaysHandler('thursday')">T</div>
+                                    <div class="include-days-menu_item" [ngClass]="{'active': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays?.value.includes('friday'.toUpperCase())}" (click)="enabledDaysHandler('friday')">F</div>
+                                    <div class="include-days-menu_item" [ngClass]="{'active': promotionDataGroup?.controls?.promotionDates?.controls?.recurringDates?.controls?.enabledDays?.value.includes('saturday'.toUpperCase())}" (click)="enabledDaysHandler('saturday')">S</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col form-group">
+                        <label>Max Attendees:</label>
+                        <div class="radio-menu">
+                          <div class="radio col">
+                            <label>
+                              <input type="radio" name="maxAttendees" value="unlimited" [formControl]="promotionDataGroup.controls?.maxAttendees">
+                              <span class="title">Unlimited</span>
+                            </label>
+                          </div>
+                          <div class="radio col">
+                            <label>
+                              <input type="radio" name="maxAttendees" value="limited" [formControl]="promotionDataGroup.controls?.maxAttendees">
+                              <span class="title">Limited</span>
+                              <div class="radio-menu-container">
+                                <div class="radio-menu-item col">
+                                  <input type="number" name="maxAttendeesPerDate" formControlName="maxAttendeesPerDate" min="1" [value]="promotionDataGroup?.controls?.maxAttendeesPerDate.value" class="form-control" [ngClass]="{'is-invalid': promotionDataGroup.get('maxAttendeesPerDate').invalid && !promotionDataGroup.get('maxAttendeesPerDate').untouched}">
+                                  <span>per promotion date</span>
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col form-group">
+                        <label>Promotion Text:</label>
+                        <textarea class="form-control toolbar" height="150" rows="5" name="promotionText" formControlName="promotionText" [value]="promotionDataGroup?.controls?.promotionText.value" placeholder="Promotion description…" [ngClass]="{'is-invalid': promotionDataGroup.get('promotionText').invalid && !promotionDataGroup.get('promotionText').untouched}" summernote [navigation]="promotionTextNavigation"></textarea>
+                      </div>
+
+                      <!-- <div class="col form-group-container">
+                            <div class="col form-group">
+                              <label>More Info Link:</label>
+                              <span class="note form-group">
+                                <input type="url" class="form-control lg" name="moreInfoLink" placeholder="https://www.website.com" pattern="^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$">
+                              </span>
+                            </div>
+                            <div class="col form-group">
+                              <label>Link Text:</label>
+                              <input type="text" class="form-control" name="moreInfoLinkText" placeholder="Info Link">
+                            </div>
+                          </div> -->
+
+                      <div class="col form-group-container">
+                        <div class="col form-group singleNameEntry">
+                          <label>Contact Name:</label>
+                          <input type="text" class="form-control" name="contactName" formControlName="contactName" [value]="promotionDataGroup?.controls?.contactName.value" placeholder="Contact name…" [ngClass]="{'is-invalid': promotionDataGroup.get('contactName').invalid && !promotionDataGroup.get('contactName').untouched}">
+                        </div>
+
+                        <div class="col form-group singleNameEntry">
+                          <label>Email:</label>
+                          <input type="email" class="form-control" name="contactEmail" formControlName="contactEmail" [value]="promotionDataGroup?.controls?.contactEmail.value" placeholder="Contact email address…" [ngClass]="{'is-invalid': promotionDataGroup.get('contactEmail').invalid && !promotionDataGroup.get('contactEmail').untouched}">
+                        </div>
+
+                        <div class="col form-group singleNameEntry">
+                          <label>Phone:</label>
+                          <input type="tel" class="form-control" name="contactPhone" formControlName="contactPhone" [value]="promotionDataGroup?.controls?.contactPhone.value" placeholder="Contact phone number…" [ngClass]="{'is-invalid': promotionDataGroup.get('contactPhone').invalid && !promotionDataGroup.get('contactPhone').untouched}">
+                        </div>
+                      </div>
+
+                      <div class="col form-group">
+                        <label>BCC:</label>
+                        <select class="form-control departments" name="BCC" [formControl]="BCC" *bootstrapSelect="BCC.value">
+                          <option value="-1" *ngIf="BCC.value == '-1'">Select Department...</option>
+                          <option *ngFor="let item of bccDepartments" [value]="item?.id">{{item.name}}</option>
+                        </select>
+                        <button [ngClass]="{'hidden': BCC.value == '-1'}" type="button" class="btn btn-default btn-sm formButton arrow" data-toggle="false" (click)="arrowBtn.dataset.toggle = !JSON.parse(arrowBtn.dataset.toggle)" #arrowBtn>
+                          <span class="glyphicon" [ngClass]="{'glyphicon-chevron-left': !JSON.parse(arrowBtn.dataset.toggle), 'glyphicon-chevron-right': JSON.parse(arrowBtn.dataset.toggle)}" aria-hidden="choose"></span>
+                        </button>
+                        <div id="deptEmailAddresses" [ngClass]="{'hidden': JSON.parse(arrowBtn.dataset.toggle) || BCC.value == '-1'}">
+                          <div class="emails" formArrayName="notifyEmails">
+                            <div *ngIf="promotionService.getDepartmentUsers(+BCC?.value).length > 1">
+                              <label for="toggleNotifyEmails" class="glyphicon-checkbox glyphy toggleNotifyEmails">
+                                <input type="checkbox" [checked]="toggleNotifyEmails.value" id="toggleNotifyEmails" [formControl]="toggleNotifyEmails">
+                                <span class="label-text">{{ toggleNotifyEmails?.value ? 'Unselect All' : 'Select All'}}</span>
+                              </label>
+                            </div>
+                            <div *ngFor="let item of promotionService.getDepartmentUsers(+BCC?.value); let i = index">
+                              <label *ngIf="item?.emailAddress" for="notifyEmail_{{item.id}}" class="glyphicon-checkbox glyphy">
+                                <input type="checkbox" class="notifyEmailAddress" id="notifyEmail_{{item.id}}" name="notifyEmail_{{item.id}}" (change)="checkboxFormArrayHandler(notifyEmailInput, promotionDataGroup?.controls?.notifyEmails, item.emailAddress); promotionService.getDepartmentUsers(+BCC?.value).length == (additionalBccEmails.value ? promotionDataGroup?.controls?.notifyEmails.value.length - 1 : promotionDataGroup?.controls?.notifyEmails.value.length) ? manageFormControl(true, toggleNotifyEmails) : null; promotionDataGroup?.controls?.notifyEmails.value.length == 0 ? manageFormControl(false, toggleNotifyEmails) : null" [attr.aria-data-email]="item.emailAddress" [value]="item.emailAddress" [checked]="promotionDataGroup.controls?.notifyEmails?.value.includes(item.emailAddress)" #notifyEmailInput>
+
+                                <span class="label-text" title="{{item.emailAddress}}">{{item?.fullName || item.emailAddress}}</span>
+                              </label>
+                            </div>
+                          </div>
+                          <div id="manualBccEmails">
+                            <form autocomplete="off">
+                              <span class="glyphicon glyphicon-plus" aria-hidden="plus"></span>
+                              <input type="text" class="form-control" name="additionalBccEmails" [value]="getCurrentCustomAdditionalBccEmail(BCC.value)" (change)="additionalBccEmailsChangeHandler($event)" #additionalBccEmails>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col form-group">
+                        <label>Footer Text:</label>
+                        <textarea class="form-control toolbar" height="150" rows="5" name="footerText" formControlName="footerText" [value]="promotionDataGroup?.controls?.footerText.value" placeholder="Footer text..." summernote [navigation]="footerTextNavigation"></textarea>
+                        <!-- <div class="radio-menu">
+                              <div class="radio col">
+                                <label>
+                                  <input type="radio" name="footerTextRequire" value="none" placeholder="" checked>
+                                  <span class="title">None</span>
+                                </label>
+                              </div>
+                              <div class="radio col">
+                                <label style="display: flex; flex-wrap: wrap; float: inherit;">
+                                  <input type="radio" name="footerTextRequire" value="requiresText">
+                                  <span class="title">Requires Text</span>
+                                  <div class="radio-menu-container top15" style="margin: 0px;">
+                                    <div class="radio-menu-item col form-group" style="padding: 0px;">
+                                      <textarea class="form-control toolbar" rows="5" name="footerText" required="" placeholder="Footer text..."></textarea>
+                                    </div>
+                                  </div>
+                                </label>
+                              </div>
+                            </div> -->
+                      </div>
+
+                      <div class="col form-group">
+                        <label>Publish:</label>
+                        <div class="radio-menu">
+                          <div class="radio col">
+                            <label>
+                              <input type="radio" name="publish" value="always" [formControl]="promotionDataGroup.controls?.publish">
+                              <span class="title">Always</span>
+                            </label>
+                          </div>
+                          <div class="radio col">
+                            <label>
+                              <input type="radio" name="publish" value="range" [formControl]="promotionDataGroup.controls?.publish">
+                              <span class="title">Date Range</span>
+                              <div class="radio-menu-container">
+                                <div class="radio-menu-item col">
+                                  <label formGroupName="activeDateRange">
+                                    <input type="text" name="activeDateRange" [value]="promotionDataGroup?.controls?.activeDateRange?.controls?.minimum?.value + (promotionDataGroup?.controls?.activeDateRange?.controls?.minimum?.value && promotionDataGroup?.controls?.activeDateRange?.controls?.maximum?.value ? ' — ' : '') + promotionDataGroup?.controls?.activeDateRange?.controls?.maximum?.value" (change)="promotionDataGroup?.controls?.activeDateRange.controls?.minimum.setValue(activeDateRange.value.split('—')[0]?.trim() || '');promotionDataGroup?.controls?.activeDateRange.controls?.maximum.setValue(activeDateRange.value.split('—')[1]?.trim() || ''); promotionDataGroup.get('activeDateRange').get('minimum').markAsTouched(); promotionDataGroup.get('activeDateRange').get('maximum').markAsTouched()" class="dateInput dateRange form-control icon-right timepicker top right" [ngClass]="{'is-invalid': (promotionDataGroup.get('activeDateRange').get('minimum').invalid || promotionDataGroup.get('activeDateRange').get('maximum').invalid) && (!promotionDataGroup.get('activeDateRange').get('minimum').untouched || !promotionDataGroup.get('activeDateRange').get('maximum').untouched)}" #activeDateRange autocomplete="off" airDatepicker>
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                  </label>
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col form-group" *ngIf="promotionService?.initialisationData?.promotionAddEditFormInitialisationData?.isSecurePayUser">
+                        <label>Custom CSS:</label>
+                        <textarea class="form-control" height="150" rows="5" name="customCSS" (input)="manageFormControl(stripHTML(promotionDataGroup?.controls?.customCSS.value), promotionDataGroup?.controls?.customCSS)" [formControl]="promotionDataGroup?.controls?.customCSS" [value]="promotionDataGroup?.controls?.customCSS.value" placeholder="Custom CSS…" summernote></textarea>
+                      </div>
+
+                      <div class="col form-group" *ngIf="promotionService?.initialisationData?.promotionAddEditFormInitialisationData?.isSecurePayUser">
+                        <label>Custom JS:</label>
+                        <textarea class="form-control" height="150" rows="5" name="customJS" (input)="manageFormControl(stripHTML(promotionDataGroup?.controls?.customJS.value), promotionDataGroup?.controls?.customJS)" [formControl]="promotionDataGroup?.controls?.customJS" [value]="promotionDataGroup?.controls?.customJS.value" placeholder="Custom JS…" summernote></textarea>
+                      </div>
+
+                      <div class="col form-group">
+                        <label>Enabled:</label>
+                        <label class="glyphicon-checkbox glyphy" style="min-width: auto;">
+                          <input type="checkbox" name="enabled" (change)="checkboxFormControlHandler(promotionDataGroup?.controls?.enabled, true, false)" [attr.checked]="promotionDataGroup?.controls?.enabled.value || null">
+                          <span class="label-text"></span>
+                        </label>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div role="tabpanel" class="tab-pane" [ngClass]="{'active': activeTab == 'tab-categories' }" id="tab-categories">
+                  <p><b>Add, Edit, Reorder Promotion Categories</b></p>
+
+                  <div class="sortable-block-container ui-sortable" formArrayName="categories" [sortablejs]="promotionDataGroup?.controls?.categories" [sortablejsOptions]="sortableOptions">
+
+                    <div *ngFor="let category of promotionDataGroup?.controls?.categories?.controls; let i = index" class="row sortable-block radio-menu-item" [formGroupName]="i">
+                      <ng-container *ngIf="promotionDataGroup?.controls?.categories?.controls[i].controls">
+                        <div class="col-11">
+                          <div class="well well-sm">
+
+                            <div class="col form-group">
+                              <input type="text" formControlName="name" [value]="promotionDataGroup?.controls?.categories?.controls[i]?.name?.value" class="form-control" name="title_category_{{category.controls?.id?.value || category.controls?.tempId?.value}}" placeholder="Title" [ngClass]="{'is-invalid': promotionDataGroup.get('categories')['controls'][i].get('name').invalid && !promotionDataGroup.get('categories')['controls'][i].get('name').untouched}">
+                            </div>
+                            <div class="col form-group"><textarea class="form-control toolbar" formControlName="description" [value]="promotionDataGroup?.controls?.categories?.controls[i]?.description?.value" rows="5" name="description_category_{{category.controls?.id?.value || category.controls?.tempId?.value}}" placeholder="Description" summernote></textarea></div>
+                            <div class="col form-group">
+                              <label>Hide Headings:</label>
+                              <label class="glyphicon-checkbox glyphy" style="min-width: auto;">
+                                <input type="checkbox" name="hideHeadings_category_{{category.controls?.id?.value || category.controls?.tempId?.value}}" (change)="checkboxFormControlHandler(promotionDataGroup?.controls?.categories?.controls[i]?.controls?.showHeadings, true, false)" [attr.checked]="!promotionDataGroup?.controls?.categories?.controls[i]?.controls?.showHeadings?.value || null">
+                                <span class="label-text"></span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="controls col-1 col-auto ps-1">
+                          <i class="glyphicon glyphicon glyphicon-menu-hamburger drag"></i>
+                          <button type="button" class="glyphicon glyphicon-minus-sign remove" (click)="removeFormArrayControl(promotionDataGroup.controls?.categories, i)" [disabled]="promotionDataGroup.controls?.categories.controls.length == 1"></button>
+                          <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="addFormArrayControl(promotionDataGroup.controls?.categories)" [disabled]="promotionDataGroup?.controls?.categories?.controls[i].get('name').invalid"></button>
+                        </div>
+                      </ng-container>
+
+                    </div>
+
+                  </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" [ngClass]="{'active': activeTab == 'tab-questions'}" id="tab-questions">
+
+                  <div class="panel panel-default">
+                    <div class="panel-heading panel-heading__tabs" formArrayName="categories">
+                      <!-- Nav tabs -->
+                      <ul class="nav nav-tabs" [ngClass]="{'nav-pills': nav.offsetHeight > 40, 'nav-tabs': nav.offsetHeight < 40}" role="tablist" id="categories-tabs" #nav>
+                        <li [ngClass]="{'active': i == activeCategoryTab}" *ngFor="let item of promotionDataGroup?.controls?.categories?.controls; let i = index">
+                          <a role="tab" data-toggle="tab" [attr.data-target]="'#category-'+i" (click)="activeCategoryTab = i">
+                            <h3 class="panel-title">{{item?.controls?.name.value}}</h3>
+                          </a>
+                        </li>
+                      </ul>
+
+                      <button type="button" class="btn btn-default collapse-questions" (click)="categoryTabPanel.children[activeCategoryTab]?.dataset.collapse = !JSON.parse(categoryTabPanel.children[activeCategoryTab]?.dataset.collapse || false)">
+                        <i class="glyphicon" [ngClass]="{'glyphicon-menu-hamburger': !JSON.parse(categoryTabPanel.children[activeCategoryTab]?.dataset.collapse || false), 'glyphicon-resize-full': JSON.parse(categoryTabPanel.children[activeCategoryTab]?.dataset.collapse || false)}"></i>
+                      </button>
+                    </div>
+                    <div class="panel-body">
+
+                      <div class="tab-content" formArrayName="categories" #categoryTabPanel>
+                        <!--questions-->
+                        <div role="tabpanel" class="sortable-block-container tab-pane ui-sortable" id="category-{{categoryIndex}}" [sortablejs]="category.controls?.questions" [sortablejsOptions]="sortableOptions" [ngClass]="{'active': categoryIndex == activeCategoryTab}" *ngFor="let category of promotionDataGroup?.controls?.categories?.controls; let categoryIndex = index" [attr.data-collapse]="false" [formGroupName]="categoryIndex">
+
+                          <div class="row sortable-block radio-menu-item" [ngClass]="{'collapsed': JSON.parse(categoryTabPanel.children[activeCategoryTab]?.dataset.collapse || false)}" id="" *ngFor="let question of category.controls?.questions?.controls; let questionIndex = index" formArrayName="questions">
+                            <div class="col-11" [formGroup]="question.controls[Object.keys(question.controls)[0]]">
+                              <div class="well well-sm">
+                                <div class="col form-group-container">
+                                  <div class="col form-group">
+                                    <label>Title:</label>
+                                    <input type="text" class="form-control" name="title_question_{{categoryIndex}}_{{questionIndex}}" formControlName="title" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.title?.value" [attr.disabled]="JSON.parse(categoryTabPanel.children[activeCategoryTab]?.dataset.collapse || false) || null" [ngClass]="{'is-invalid': question.controls[Object.keys(question.controls)[0]]?.get('title')?.invalid && !question.controls[Object.keys(question.controls)[0]]?.get('title').untouched}">
+                                  </div>
+
+                                  <div class="col form-group">
+                                    <label>{{Object.keys(question.controls)[0] == 'shortTextQuestion' ? 'Placeholder' : 'Description'}}:</label>
+                                    <!--<input type="text" class="form-control xl" name="description">-->
+                                    <textarea class="form-control toolbar" rows="1" name="description_question_{{categoryIndex}}_{{questionIndex}}" formControlName="description" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.description?.value" placeholder="Description..." summernote></textarea>
+                                  </div>
+
+                                  <div class="col form-group">
+                                    <label>Hide Headings:</label>
+                                    <label class="glyphicon-checkbox glyphy" style="min-width: auto;">
+                                      <input type="checkbox" name="hideHeadings_question_{{categoryIndex}}_{{questionIndex}}" (change)="checkboxFormControlHandler(question.controls[Object.keys(question.controls)[0]]?.controls?.showHeadings, true, false)" [attr.checked]="!question.controls[Object.keys(question.controls)[0]]?.controls?.showHeadings?.value || null">
+                                      <span class="label-text"></span>
+                                    </label>
+                                  </div>
+
+                                  <!--<div class="col form-group">
+                                        <label>Display Never:</label>
+                                        <label class="glyphicon-checkbox glyphy" style="min-width: auto;">
+                                          <input type="checkbox" name="displayNever">
+                                          <span class="label-text"></span>
+                                        </label>
+                                      </div>-->
+                                </div>
+
+                                <div class="col form-group" style="display: block;">
+                                  <label>Type:</label>
+                                  <select class="form-control" name="type_question_{{categoryIndex}}_{{questionIndex}}" (change)="changeQuestionType(categoryIndex, questionIndex, type.value)" #type *bootstrapSelect>
+                                    <option value="multiChoiceQuestion" [selected]="Object.keys(question.controls)[0] == 'multiChoiceQuestion'">Multi-Choice</option>
+                                    <option value="dateQuestion" [selected]="Object.keys(question.controls)[0] == 'dateQuestion'">Date</option>
+                                    <option value="shortTextQuestion" [selected]="Object.keys(question.controls)[0] == 'shortTextQuestion'">Text - Single Line</option>
+                                    <option value="longTextQuestion" [selected]="Object.keys(question.controls)[0] == 'longTextQuestion'">Text - Large Text Area</option>
+                                  </select>
+                                  <div class="radio-menu" *ngIf="Object.keys(question.controls)[0] == 'multiChoiceQuestion'">
+                                    <div class="radio col" style="margin:0px; margin-left: 8.0em;">
+                                      <div class="radio-menu-container top20 ui-sortable" formArrayName="options" [sortablejs]="question.controls[Object.keys(question.controls)[0]]?.controls?.options" [sortablejsOptions]="sortableOptions">
+                                        <div class="radio-menu-item col" *ngFor="let option of question.controls[Object.keys(question.controls)[0]]?.controls?.options?.controls || [null]; let i = index" [formGroupName]="i">
+                                          <span class="note form-group" style="flex: 1;">
+                                            <input type="text" name="optionName_option_{{option.controls.id?.value || option.controls.tempId?.value}}" formControlName="title" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.options?.controls[i]?.title?.value" class="form-control" [ngClass]="{'is-invalid': option?.get('title')?.invalid && !option?.get('title').untouched}">
+                                            <span class="note-title">Name</span>
+                                          </span>
+                                          <span class="note form-group" style="flex: 1;">
+                                            <input type="text" name="optionDescription_option_{{option.controls.id?.value || option.controls.tempId?.value}}" formControlName="description" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.options?.controls[i]?.description?.value" class="form-control">
+                                            <span class="note-title">Description</span>
+                                          </span>
+                                          <span class="note">
+                                            <input type="number" name="optionCost_option_{{option.controls.id?.value || option.controls.tempId?.value}}" formControlName="cost" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.options?.controls[i]?.cost?.value" step="any" class="form-control text-end">
+                                            <span class="note-title">Cost</span>
+                                          </span>
+                                          <div class="controls">
+                                            <i class="glyphicon glyphicon-menu-hamburger drag"></i>
+                                            <button type="button" class="glyphicon glyphicon-minus-sign remove" (click)="removeFormArrayControl(question.controls[Object.keys(question.controls)[0]]?.controls?.options, i)" [disabled]="question.controls[Object.keys(question.controls)[0]]?.controls?.options.controls.length == 1"></button>
+                                            <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="addFormArrayControl(question.controls[Object.keys(question.controls)[0]]?.controls?.options)" [disabled]="question.controls[Object.keys(question.controls)[0]]?.controls?.options.invalid"></button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <!-- <div class="radio col">
+                                          <div class="radio-menu-container">
+                                            <div class="radio-menu-item col">
+                                              2
+                                            </div>
+                                          </div>
+                                        </div> -->
+
+                                  </div>
+                                </div>
+
+                                <div class="col form-group" style="display: block;" *ngIf="['shortTextQuestion', 'multiChoiceQuestion'].includes(Object.keys(question.controls)[0])">
+                                  <label>Content Type:</label>
+                                  <div class="radio-menu" style="width:auto">
+                                    <div class="radio col" style="margin:0px">
+                                      <label style="margin:0px">
+                                        <span style="margin: 0;" *ngIf="Object.keys(question.controls)[0] == 'shortTextQuestion'; else second">
+                                          <select class="form-control" name="contentType_question_{{categoryIndex}}_{{questionIndex}}" formControlName="contentType" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.contentType.value" *bootstrapSelect>
+                                            <option value="text" [selected]="!['text','emailAddress','phoneNumber','value'].includes(question.controls[Object.keys(question.controls)[0]]?.controls?.contentType.value)">Simple Text</option>
+                                            <option value="emailAddress">Email Address</option>
+                                            <option value="phoneNumber">Phone Number</option>
+                                            <option value="value">Value</option>
+                                          </select>
+                                        </span>
+
+                                        <ng-template #second>
+                                          <span style="margin: 0;" *ngIf="Object.keys(question.controls)[0] == 'multiChoiceQuestion'">
+                                            <select class="form-control" name="displayMethod_question_{{categoryIndex}}_{{questionIndex}}" formControlName="displayMethod" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.displayMethod?.value" *bootstrapSelect>
+                                              <option value="expandedList" [selected]="!['expandedList','dropdownMenu'].includes(question.controls[Object.keys(question.controls)[0]]?.controls?.contentType.value)">Display All</option>
+                                              <option value="dropdownMenu">Dropdown Menu</option>
+                                            </select>
+                                          </span>
+                                        </ng-template>
+
+                                        <div class="radio-menu-container" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.contentType.value == 'value'" formGroupName="valueLimits">
+                                          <div class="radio-menu-item col">
+                                            <label class="title text-end" style="font-weight:bold">Minimum:</label>
+                                            <input type="number" step="1" name="minimumValue_question_{{categoryIndex}}_{{questionIndex}}" formControlName="minimum" min="0" [attr.max]="+maximumValue.value ? maximumValue.value : null" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.valueLimits?.controls?.minimum?.value" class="form-control" #minimumValue>
+                                          </div>
+                                          <div class="radio-menu-item col">
+                                            <label class="title text-end" style="font-weight:bold">Maximum:</label>
+                                            <div style="z-index: 1;">
+                                              <input class="unlimited-input form-control" type="text" readonly value="No Limit">
+                                              <input type="number" step="1" name="maximumValue_question_{{categoryIndex}}_{{questionIndex}}" formControlName="maximum" min="0" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.valueLimits?.controls?.maximum?.value" class="form-control" [ngClass]="{'unlimited': maximumValue.value == 0}" #maximumValue>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+
+
+                                <div class="col form-group" *ngIf="Object.keys(question.controls)[0] == 'shortTextQuestion' && question.controls[Object.keys(question.controls)[0]]?.controls?.contentType.value != 'value'">
+                                  <label>Validation:</label>
+                                  <input type="text" class="form-control xl" name="validationRegex_question_{{categoryIndex}}_{{questionIndex}}" formControlName="validationRegex" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.validationRegex?.value" placeholder="Regex to match...">
+                                </div>
+
+                                <div class="col form-group" *ngIf="Object.keys(question.controls)[0] == 'shortTextQuestion' && question.controls[Object.keys(question.controls)[0]]?.controls?.contentType.value != 'value'">
+                                  <label>Default Value:</label>
+                                  <input type="text" class="form-control xl" name="defaultValue_question_{{categoryIndex}}_{{questionIndex}}" formControlName="defaultValue" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.defaultValue?.value" placeholder="" [ngClass]="{'is-invalid': question.controls[Object.keys(question.controls)[0]]?.get('defaultValue')?.invalid && !question.controls[Object.keys(question.controls)[0]]?.get('defaultValue').untouched}">
+                                </div>
+
+                                <div class="col form-group-container" *ngIf="Object.keys(question.controls)[0] == 'dateQuestion'">
+                                  <div class="col form-group">
+                                    <label>Base Price:</label>
+                                    <div class="radio-menu">
+                                      <div class="radio col">
+                                        <label>
+                                          <input type="radio" name="basePricePricing_question_{{categoryIndex}}_{{questionIndex}}" value="standardPricing" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrice">
+                                          <span class="title">Standard Pricing</span>
+                                          <div class="radio-menu-container">
+                                            <div class="radio-menu-item col">
+                                              <input type="number" name="basePrice_question_{{categoryIndex}}_{{questionIndex}}" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any" 
+                                              [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.sunday.value"
+                                              (change)="manageFormControls(+basePrice.value, 
+                                                  [
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.sunday,
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.monday,
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.tuesday,
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.wednesday,
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.thursday,
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.friday,
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.saturday
+                                                  ]
+                                                  )" #basePrice>
+                                            </div>
+                                          </div>
+                                        </label>
+                                      </div>
+                                      <div class="radio col">
+                                        <label>
+                                          <input type="radio" name="basePricePricing_question_{{categoryIndex}}_{{questionIndex}}" value="perDayPricing" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrice">
+                                          <span class="title">Per Day Pricing</span>
+                                          <div class="radio-menu-container" formGroupName="basePrices">
+                                            <div class="radio-menu-item col">
+                                              <label class="title text-end">Sunday:</label>
+                                              <input type="number" name="sundayBasePrice_question_{{categoryIndex}}_{{questionIndex}}" formControlName="sunday" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.sunday?.value" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any">
+                                            </div>
+                                            <div class="radio-menu-item col">
+                                              <label class="title text-end">Monday:</label>
+                                              <input type="number" name="mondayBasePrice_question_{{categoryIndex}}_{{questionIndex}}" formControlName="monday" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.monday?.value" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any">
+                                            </div>
+                                            <div class="radio-menu-item col">
+                                              <label class="title text-end">Tuesday:</label>
+                                              <input type="number" name="tuesdayBasePrice_question_{{categoryIndex}}_{{questionIndex}}" formControlName="tuesday" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.tuesday?.value" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any">
+                                            </div>
+                                            <div class="radio-menu-item col">
+                                              <label class="title text-end">Wednesday:</label>
+                                              <input type="number" name="wednesdayBasePrice_question_{{categoryIndex}}_{{questionIndex}}" formControlName="wednesday" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.wednesday?.value" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any">
+                                            </div>
+                                            <div class="radio-menu-item col">
+                                              <label class="title text-end">Thursday:</label>
+                                              <input type="number" name="thursdayBasePrice_question_{{categoryIndex}}_{{questionIndex}}" formControlName="thursday" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.thursday?.value" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any">
+                                            </div>
+                                            <div class="radio-menu-item col">
+                                              <label class="title text-end">Friday:</label>
+                                              <input type="number" name="fridayBasePrice_question_{{categoryIndex}}_{{questionIndex}}" formControlName="friday" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.friday?.value" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any">
+                                            </div>
+                                            <div class="radio-menu-item col">
+                                              <label class="title text-end">Saturday:</label>
+                                              <input type="number" name="saturdayBasePrice_question_{{categoryIndex}}_{{questionIndex}}" formControlName="saturday" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.basePrices?.controls?.saturday?.value" placeholder="{{promotionDataGroup?.controls.hotel.controls.currency.value}}" class="form-control text-end" min="0" step="any">
+                                            </div>
+                                          </div>
+                                        </label>
+                                      </div>
+
+                                      <!--<div class="radio col">
+                                            <label style="min-height:auto">
+                                              <div class="radio-menu-container">
+                                                <div class="radio-menu form-group" style="flex-flow: wrap; padding:0px; margin-left: 15px; padding-top: 20px;">
+                                                  <div class="radio col">
+                                                    <label>
+                                                      <input type="radio" name="basePricePeriod" value="day" placeholder="" checked>
+                                                      <span class="title">Per Day</span>
+                                                    </label>
+                                                  </div>
+                                                  <div class="radio col">
+                                                    <label>
+                                                      <input type="radio" name="basePricePeriod" value="night" placeholder="">
+                                                      <span class="title">Per Night</span>
+                                                    </label>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              </label>
+                                            </div>-->
+
+                                    </div>
+
+
+                                    <!--<input type="number" name="basePrice" placeholder="AED" class="form-control text-end" min="0" step="any">
+                                          <div class="radio-menu form-group" style="flex-flow: wrap; padding:0px; margin-left: 15px;">
+                                            <div class="radio col">
+                                              <label>
+                                                <input type="radio" name="basePricePeriod" value="day" placeholder="" checked>
+                                                <span class="title">Per Day</span>
+                                              </label>
+                                            </div>
+                                            <div class="radio col">
+                                              <label>
+                                                <input type="radio" name="basePricePeriod" value="night" placeholder="">
+                                                <span class="title">Per Night</span>
+                                              </label>
+                                            </div>
+                                          </div>-->
+
+                                  </div>
+
+                                  <div class="col form-group" *ngIf="['dateQuestion'].includes(Object.keys(question.controls)[0])">
+                                    <label>Apply Prices:</label>
+                                    <div class="radio-menu">
+                                      <div class="radio col">
+                                        <label>
+                                          <input type="radio" name="pricingMethod_question_{{categoryIndex}}_{{questionIndex}}" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricingMethod" value="perDay">
+                                          <span class="title">Per Day</span>
+                                        </label>
+                                      </div>
+                                      <div class="radio col">
+                                        <label>
+                                          <input type="radio" name="pricingMethod_question_{{categoryIndex}}_{{questionIndex}}" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricingMethod" value="perNight" [attr.disabled]="question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultipleType.value == 'arbitraryDates' || null">
+                                          <span class="title">Per Night</span>
+                                        </label>
+                                      </div>
+                                      <div class="radio col">
+                                        <label>
+                                          <input type="radio" name="pricingMethod_question_{{categoryIndex}}_{{questionIndex}}" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricingMethod" value="dontApply">
+                                          <span class="title">Don't Apply</span>
+                                        </label>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                </div>
+
+                                <div class="col form-group" *ngIf="['dateQuestion', 'multiChoiceQuestion'].includes(Object.keys(question.controls)[0])">
+                                  <label>Add Taxes:</label>
+                                  <div class="radio-menu">
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="addTaxes_question_{{categoryIndex}}_{{questionIndex}}" [value]="false" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.addTaxes">
+                                        <span class="title">No</span>
+                                      </label>
+                                    </div>
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="addTaxes_question_{{categoryIndex}}_{{questionIndex}}" [value]="true" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.addTaxes">
+                                        <span class="title">Yes</span>
+                                        <div class="radio-menu-container taxes" formArrayName="taxes">
+
+                                          <div class="radio-menu-item col" *ngFor="let tax of question.controls[Object.keys(question.controls)[0]]?.controls?.taxes?.controls; let i = index" [formGroupName]="i">
+                                            <span class="note form-group" style="flex: 1;">
+                                              <input type="text" name="taxName_tax_{{tax.controls.tax.controls.id?.value || tax.controls.tax.controls.tempId?.value}}" [formControl]="tax?.controls.tax?.controls?.name" [value]="tax?.controls.tax?.controls.name?.value" class="form-control" [ngClass]="{'is-invalid': tax?.get('tax').get('name')?.invalid && !tax?.get('tax').get('name').untouched}">
+                                              <span class="note-title">Tax Name</span>
+                                            </span>
+                                            <span class="note">
+                                              <input type="number" name="taxAmount_tax_{{tax.controls.tax.controls.id?.value || tax.controls.tax.controls.tempId?.value}}" [formControl]="tax?.controls.amount" [value]="tax?.controls?.amount?.value" min="0" step="any" class="form-control text-end">
+                                              <span class="note-title text-end">Tax Rate/Amt</span>
+                                            </span>
+                                            <span class="note" style="flex-basis: 90px!important; flex:none;">
+                                              <select class="form-control xsm-min-width w-100" [ngClass]="{'auto-width': true}" [formControl]="tax?.controls.tax?.controls.taxType" [value]="tax?.controls.tax?.controls.taxType.value" name="taxType_tax_{{tax.controls.tax.controls.id?.value || tax.controls.tax.controls.tempId?.value}}" *bootstrapSelect="question.controls[Object.keys(question.controls)[0]]?.controls?.addTaxes.value">
+                                                <option value="percentage">%</option>
+                                                <option value="fixed">{{false ? promotionDataGroup?.controls.hotel.controls.currency.value: 'Fixed'}}</option>
+                                                <option value="perUnit">Per Unit</option>
+                                              </select>
+                                            </span>
+                                            <div class="controls">
+                                              <button type="button" class="glyphicon glyphicon-minus-sign remove" (click)="removeFormArrayControl(question.controls[Object.keys(question.controls)[0]]?.controls?.taxes, i)" [disabled]="question.controls[Object.keys(question.controls)[0]]?.controls?.taxes.length == 1"></button>
+                                              <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="addFormArrayControl(question.controls[Object.keys(question.controls)[0]]?.controls?.taxes)" [disabled]="question.controls[Object.keys(question.controls)[0]]?.controls?.taxes.invalid"></button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="col form-group" style="padding-top:15px;" *ngIf="['dateQuestion'].includes(Object.keys(question.controls)[0])" formGroupName="possibleDates">
+                                  <label>Dates:</label>
+                                  <div class="radio-menu">
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="dates_question_{{categoryIndex}}_{{questionIndex}}" value="same" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.dates" (change)="replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates, getPossibleDatesFormGroup(promotionDataGroup?.controls?.promotionDates.value), 'possibleDates')">
+                                        <span class="title">Same as Promotion</span>
+                                        <div class="radio-menu-container dates" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.dates.value == 'same' && ['specific'].includes(promotionDataGroup?.controls?.promotionDate.value)">
+
+                                          <!-- *ngIf="... && filterArray(promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates?.value?.length, [''])"-->
+
+                                          <!-- <div class="radio-menu-item col" *ngFor="let staticDate of filterControls(promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates?.controls, isValidControl); let i = index">
+                                            <label>
+                                              <input type="text" name="samePromotionDate_staticDate_{{i}}" [value]="staticDate.value" class="dateInput form-control icon-right" disabled>
+                                              <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                            </label>
+                                            <span class="note">
+                                              <input type="number" name="samePromotionDiscount_staticDate_{{i}}" value="0" class="form-control text-end">
+                                              <span class="note-title text-end">Discount / Surcharge</span>
+                                            </span>
+                                            <div class="controls">
+                                              <button type="button" class="glyphicon glyphicon-minus-sign remove"
+                                              (click)="removeFormGroupControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates, i)" 
+                                              [disabled]="true"
+                                              ></button>
+                                              <button type="button" class="glyphicon glyphicon-plus-sign add"
+                                              (click)="addFormGroupControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates, 0)" 
+                                              [disabled]=""
+                                              ></button>
+                                            </div>
+                                          </div> -->
+
+                                          <ng-container *ngIf="question?.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates?.controls.staticDatesWithPricing?.controls?.dates">
+                                            <div class="radio-menu-item col" *ngFor="let date of getSameAsPromotionStaticDates(question); let i = index" [formGroup]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates">
+                                              <ng-container *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date]">
+                                                <label>
+                                                  <input type="text" name="multipleDate_date_{{i}}" [value]="date" class="dateInput form-control icon-right" (change)="renameFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date], ''+thisDate.value);" (blur)="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date]?.markAsTouched()" #thisDate [ngClass]="{'is-invalid': question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[thisDate.value]?.invalid && !question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[thisDate.value]?.untouched}" autocomplete="off" [disabled]="getRawValueDeep(filterControls(promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates?.controls, isValidControl)).includes(date)" [datepickerOptions]="customDatepickerOptions" [attr.data-disabled-dates]="getSameAsPromotionStaticDates(question).join(',')" [attr.data-dates1]="getSameAsPromotionStaticDates(question) | json" [airDatepicker]="filterArray(getSameAsPromotionStaticDates(question), [date]).join(',')">
+                                                  <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                                </label>
+                                                <span class="note">
+                                                  <input type="number" name="discount_date_{{i}}" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls?.staticDatesWithPricing?.controls?.dates?.get(date)?.value || 0" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date]" class="form-control text-end">
+                                                  <span class="note-title text-end">Discount/Surcharge</span>
+                                                </span>
+                                                <div class="controls">
+                                                  <button type="button" class="glyphicon glyphicon-minus-sign remove" (click)="removeFormGroupControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates, thisDate?.value)" [disabled]="Object.keys(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls?.staticDatesWithPricing.controls?.dates).length == 1 || getRawValueDeep(filterControls(promotionDataGroup?.controls?.promotionDates?.controls?.staticDates?.controls?.dates?.controls, isValidControl)).includes(date)"></button>
+                                                  <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="addFormGroupControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates, 0)" [disabled]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.invalid"></button>
+                                                </div>
+                                              </ng-container>
+                                            </div>
+                                          </ng-container>
+
+                                        </div>
+                                      </label>
+                                    </div>
+
+
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="dates_question_{{categoryIndex}}_{{questionIndex}}" value="specific" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.dates" (change)="replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates, getPossibleDatesFormGroup({}), 'possibleDates')">
+                                        <span class="title">Specific Dates</span>
+                                        <div class="radio-menu-container" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.dates.value == 'specific'">
+                                          <!--<div class="col" style="max-width: max-content; grid-gap: 5px;display: grid;padding-bottom: 15px;grid-auto-flow: column;">
+                                                <label class="glyphicon-checkbox glyphy" style="min-width: auto!important">
+                                                  <input type="checkbox" name="disableOtherDates">
+                                                  <span class="label-text">Disable Other Dates</span>
+                                                </label>
+                                              </div>-->
+                                          <div class="radio-menu-container" style="display: flex;flex-flow: wrap;flex-direction: column;">
+
+
+                                            <ng-container *ngFor="let date of getStaticDatesWithPricing(question); let i = index">
+
+
+
+                                              <div class="radio-menu-item col" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates?.controls?.staticDatesWithPricing?.controls?.dates?.get(date)" [formGroup]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date]">
+                                                <label>
+                                                  <input type="text" name="multipleDate_date_{{i}}" [value]="date" (change)="renameFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date], ''+thisDate.value, false);" class="dateInput form-control icon-right" (blur)="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date]?.markAsTouched()" #thisDate [ngClass]="{'is-invalid': question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[thisDate.value]?.invalid && !question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[thisDate.value]?.untouched}" autocomplete="off" [datepickerOptions]="customDatepickerOptions" [attr.data-disabled-dates]="getDisabledStaticDates(question, i).join(',')" [airDatepicker]="getDisabledStaticDates(question, i).join(',')">
+                                                  <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                                </label>
+                                                <span class="note">
+                                                  <input type="number" name="discount_date_{{i}}" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date].value" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls[date]" class="form-control text-end">
+                                                  <span class="note-title text-end">Discount/Surcharge</span>
+                                                </span>
+
+                                                <div class="controls">
+                                                  <button type="button" class="glyphicon glyphicon-minus-sign remove" (click)="removeFormGroupControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates, date)" [disabled]="Object.keys(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.controls).length < 2"></button>
+                                                  <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="setAbstractControlsOrder('staticDatesWithPricing', i+1); addFormGroupControl(question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates, 0, '');" [disabled]="question.controls[Object.keys(question.controls)[0]]?.controls?.possibleDates.controls.staticDatesWithPricing.controls.dates.invalid"></button>
+                                                </div>
+                                              </div>
+                                            </ng-container>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <!--<div class="col form-group">
+                                      <label>Info Link:</label>
+                                      <input type="url" class="form-control lg" name="moreInfoLink" placeholder="https://www.website.com" pattern="^(?:http(s)?:\\/\\/)[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$">
+                                    </div>
+                                    <div class="col form-group">
+                                      <label>Link Text:</label>
+                                      <input type="text" class="form-control" name="moreInfoLinkText" placeholder="Info Link">
+                                    </div>-->
+
+                                <div class="col form-group" *ngIf="['dateQuestion', 'multiChoiceQuestion'].includes(Object.keys(question.controls)[0])">
+
+                                  <label>Select Multiple:</label>
+                                  <div class="radio-menu">
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="selectMultiple_question_{{categoryIndex}}_{{questionIndex}}" [value]="false" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultipleOptions" (change)="replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultiple, formBuilder.group(getQuestionFormGroup({}, Object.keys(question.controls)[0])).get('selectMultiple'), 'selectMultiple')">
+                                        <span class="title">No</span>
+                                      </label>
+                                    </div>
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="selectMultiple_question_{{categoryIndex}}_{{questionIndex}}" [value]="true" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultipleOptions" (change)="replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultiple, formBuilder.group(getQuestionFormGroup({selectMultiple:true}, Object.keys(question.controls)[0])).get('selectMultiple'), 'selectMultiple')">
+                                        <span class="title">Yes</span>
+                                        <div class="radio-menu-container" *ngIf="['dateQuestion'].includes(Object.keys(question.controls)[0]) && question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultiple?.controls?.maximum">
+                                          <div class="radio-menu-item col form-group" formGroupName="selectMultiple">
+                                            <label class="title text-end">Minimum:</label>
+                                            <input type="number" step="1" name="minimumSelect_question_{{categoryIndex}}_{{questionIndex}}" formControlName="minimum" min="1" [attr.max]="+maximumSelect.value ? maximumSelect.value : null" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultiple?.controls?.minimum?.value" class="form-control" #minimumSelect>
+                                          </div>
+                                          <div class="radio-menu-item col form-group" formGroupName="selectMultiple">
+                                            <label class="title text-end">Maximum:</label>
+                                            <div style="z-index: 1;">
+                                              <input class="unlimited-input form-control" type="text" readonly value="No Limit">
+                                              <input type="number" step="1" name="maximumSelect_question_{{categoryIndex}}_{{questionIndex}}" formControlName="maximum" min="0" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultiple?.controls?.maximum?.value" class="form-control" [ngClass]="{'unlimited': maximumSelect.value == 0}" #maximumSelect>
+                                            </div>
+                                          </div>
+                                          <div class="radio-menu-item col form-group">
+                                            <label class="title text-end period-selection">Period Selection:</label>
+                                            <div style="z-index: 1;">
+                                              <select class="form-control" name="selectMultipleType_question_{{categoryIndex}}_{{questionIndex}}" formControlName="selectMultipleType" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.selectMultipleType?.value" *bootstrapSelect>
+                                                <option value="arbitraryDates">Arbitrary Dates</option>
+                                                <option value="dateRange">Date Range</option>
+                                              </select>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="col form-group" *ngIf="['dateQuestion', 'multiChoiceQuestion'].includes(Object.keys(question.controls)[0])">
+                                  <label>Buy Multiple:</label>
+                                  <div class="radio-menu">
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="buyMultiple_question_{{categoryIndex}}_{{questionIndex}}" [value]="false" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.buyMultipleOptions" (change)="replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.buyMultiple, formBuilder.group(getQuestionFormGroup({}, Object.keys(question.controls)[0])).get('buyMultiple'))">
+                                        <span class="title">No</span>
+                                      </label>
+                                    </div>
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="buyMultiple_question_{{categoryIndex}}_{{questionIndex}}" [value]="true" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.buyMultipleOptions" (change)="replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.buyMultiple, formBuilder.group(getQuestionFormGroup({buyMultiple:true}, Object.keys(question.controls)[0])).get('buyMultiple'))">
+                                        <span class="title">Yes</span>
+                                        <div class="radio-menu-container" formGroupName="buyMultiple" *ngIf="['dateQuestion', 'multiChoiceQuestion'].includes(Object.keys(question.controls)[0]) && question.controls[Object.keys(question.controls)[0]]?.controls?.buyMultiple?.controls?.minimum?.value != undefined">
+                                          <div class="radio-menu-item col">
+                                            <label class="title text-end">Minimum:</label>
+                                            <input type="number" step="1" name="minimumBuy_question_{{categoryIndex}}_{{questionIndex}}" formControlName="minimum" min="1" [attr.max]="+maximumBuy.value ? maximumBuy.value : null" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.buyMultiple?.controls?.minimum?.value" class="form-control" #minimumBuy>
+                                          </div>
+                                          <div class="radio-menu-item col">
+                                            <label class="title text-end">Maximum:</label>
+                                            <div style="z-index: 1;">
+                                              <input class="unlimited-input form-control" type="text" readonly value="No Limit">
+                                              <input type="number" step="1" name="maximumBuy_question_{{categoryIndex}}_{{questionIndex}}" formControlName="maximum" min="0" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.buyMultiple?.controls?.maximum?.value" class="form-control" [ngClass]="{'unlimited': maximumBuy.value == 0}" #maximumBuy>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  </div>
+
+                                </div>
+
+                                <div class="col form-group">
+                                  <label>Mandatory:</label>
+                                  <div class="radio-menu">
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="mandatory_question_{{categoryIndex}}_{{questionIndex}}" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.mandatory" [value]="false" [attr.checked]="!question.controls[Object.keys(question.controls)[0]]?.controls?.mandatory?.value != false || null">
+                                        <span class="title">No</span>
+                                      </label>
+                                    </div>
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="mandatory_question_{{categoryIndex}}_{{questionIndex}}" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.mandatory" [value]="true" [attr.checked]="question.controls[Object.keys(question.controls)[0]]?.controls?.mandatory?.value != false || null">
+                                        <span class="title">Yes</span>
+                                        <!--<div class="radio-menu-container" style="margin-top: 0px; z-index: 1; width: max-content; left:20px;">
+                                              <div class="radio-menu-item col">
+                                                <label>
+                                                  <input type="radio" name="displayAs" value="radio" checked>
+                                                  <span class="title">Display as radio buttons</span>
+                                                </label>
+                                              </div>
+                                              <div class="radio-menu-item col">
+                                                <label>
+                                                  <input type="radio" name="displayAs" value="dropdown">
+                                                  <span class="title">Display as dropdown</span>
+                                                </label>
+                                              </div>
+                                            </div>-->
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="col form-group" *ngIf="['multiChoiceQuestion'].includes(Object.keys(question.controls)[0])">
+                                  <label>Pricing:</label>
+                                  <div class="radio-menu">
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="pricing_question_{{categoryIndex}}_{{questionIndex}}" value="asIs" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricing" [attr.checked]="(!getPromotionQuestions(categoryIndex, 'dateQuestion').length && question.controls[Object.keys(question.controls)[0]]?.controls?.pricing.value == 'perDate') || (!getPromotionQuestions(categoryIndex, 'multiChoiceQuestion', (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value)).length && question.controls[Object.keys(question.controls)[0]]?.controls?.pricing.value == 'perQuantity') ? manageFormControl('asIs', question.controls[Object.keys(question.controls)[0]]?.controls?.pricing) : null">
+                                        <span class="title">As-is</span>
+                                      </label>
+                                    </div>
+                                    <div class="radio col" *ngIf="getPromotionQuestions(categoryIndex, 'dateQuestion').length">
+                                      <label style="flex-flow: wrap row;">
+                                        <input type="radio" name="pricing_question_{{categoryIndex}}_{{questionIndex}}" value="perDate" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricing">
+                                        <span class="title">Per
+                                          <select class="form-control" name="timesOfDay" [attr.disabled]="(question.controls[Object.keys(question.controls)[0]]?.controls?.pricing.value != 'perDate') ? true : null" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricingDependencyMethod || null" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricingDependencyMethod?.value" *bootstrapSelect="(question.controls[Object.keys(question.controls)[0]]?.controls?.pricing.value != 'perDate')">
+                                            <option value="perDay">Day</option>
+                                            <option value="perNight">Night</option>
+                                          </select>
+                                          Chosen in Question</span>
+                                        <div class="radio-menu-container" style="max-width: 150px;" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.pricing.value == 'perDate'">
+                                          <div class="radio-menu-item col">
+                                            <select class="form-control inherit-width" name="perDate" [value]="question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.get(Object.keys(question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.controls || {})[0])?.get('id')?.value || question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.get(Object.keys(question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.controls || {})[0])?.get('tempId')?.value || null" (change)="changePricingDependsOn(categoryIndex, questionIndex, pricingDependsOn.value)" #pricingDependsOn *bootstrapSelect="getQuestionSelectCollection(getPromotionQuestions(categoryIndex, 'dateQuestion'))">
+                                              <option [value]="item.controls['dateQuestion'].controls.id?.value || item.controls['dateQuestion'].controls.tempId?.value" *ngFor="let item of getPromotionQuestions(categoryIndex, 'dateQuestion'); let i = index" [attr.selected]="(
+                                                (
+                                                  !question.controls[Object.keys(question.controls)[0]]?.controls?.pricingDependsOn?.value
+                                                ) && i == 0) ? 
+                                                replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.pricingDependsOn, getShortPromotionQuestion( item.value, true), 'pricingDependsOn')
+                                                : null">
+                                                {{item.controls['dateQuestion'].controls.title.value}}
+                                              </option>
+                                            </select>
+                                          </div>
+                                        </div>
+
+                                        <div class="radio-menu-container" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.pricing?.value == 'perDate'">
+                                          <div class="radio-menu form-group" style="flex-flow: wrap; padding:0px; margin-left: 15px; padding-top: 10px!important; width: revert;">
+                                            <div class="radio col">
+                                              <label>
+                                                <input type="radio" formControlName="optionCostsFixed" [value]="true" [attr.checked]="question.controls[Object.keys(question.controls)[0]]?.controls?.optionCostsFixed?.value == true">
+                                                <span class="title">Option Costs are Fixed</span>
+                                              </label>
+                                            </div>
+                                            <div class="radio col">
+                                              <label>
+                                                <input type="radio" formControlName="optionCostsFixed" [value]="false" [attr.checked]="question.controls[Object.keys(question.controls)[0]]?.controls?.optionCostsFixed?.value == false">
+                                                <span class="title">Option Costs are Applied to Base Price</span>
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+
+
+                                      </label>
+                                    </div>
+
+
+                                    <div class="radio col" *ngIf="getPromotionQuestions(categoryIndex, 'multiChoiceQuestion', (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value)).length">
+                                      <label>
+                                        <input type="radio" name="pricing_question_{{categoryIndex}}_{{questionIndex}}" value="perQuantity" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.pricing">
+                                        <span class="title">Per Quantity Entered in Question</span>
+                                        <div class="radio-menu-container" style="max-width: 180px;">
+                                          <div class="radio-menu-item col" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.pricing.value == 'perQuantity'">
+                                            <select class="form-control inherit-width" name="perQuantity_question_{{categoryIndex}}_{{questionIndex}}" [value]="question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.get(Object.keys(question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.controls || {})[0])?.get('id')?.value || question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.get(Object.keys(question.controls[Object.keys(question.controls)[0]]?.get('pricingDependsOn')?.controls || {})[0])?.get('tempId')?.value || null" (change)="changePricingDependsOn(categoryIndex, questionIndex, pricingDependsOn.value)" #pricingDependsOn *bootstrapSelect="getQuestionSelectCollection(getPromotionQuestions(categoryIndex, 'multiChoiceQuestion', (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value)))">
+                                              <option [value]="item.controls['multiChoiceQuestion'].controls.id?.value || item.controls['multiChoiceQuestion'].controls.tempId?.value" *ngFor="let item of getPromotionQuestions(categoryIndex, 'multiChoiceQuestion', (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value)); let i = index" [attr.selected]="(
+                                                (
+                                                  !question.controls[Object.keys(question.controls)[0]]?.controls?.pricingDependsOn?.value
+                                                ) && i == 0) ? 
+                                                
+                                                replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.pricingDependsOn, getShortPromotionQuestion( item.value, true), 'pricingDependsOn')
+                                                : null">
+
+                                                {{item.controls['multiChoiceQuestion'].controls.title.value}}
+                                              </option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+
+                                  </div>
+                                </div>
+
+                                <div class="col form-group">
+                                  <label>Display:</label>
+                                  <div class="radio-menu">
+                                    <div class="radio col">
+                                      <label>
+                                        <input type="radio" name="display_question_{{categoryIndex}}_{{questionIndex}}" value="always" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.display">
+                                        <span class="title">Always</span>
+                                      </label>
+                                    </div>
+                                    <div class="radio col" formGroupName="displayCriteria" *ngIf="getQuestionSelectCollection(getPromotionQuestions(categoryIndex, null, (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value) )).length">
+                                      <label style="flex-wrap: wrap;">
+                                        <input type="radio" name="display_question_{{categoryIndex}}_{{questionIndex}}" value="conditional" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.display">
+                                        <span class="title">Conditional</span>
+                                        <div class="radio-menu-container top15" style="margin: 0px;">
+                                          <div class="radio-menu-item col" style="padding: 0px;">
+
+                                            <select class="md-max-width form-control" name="comparisonQuestion_question_{{categoryIndex}}_{{questionIndex}}" [value]="question.controls[Object.keys(question.controls)[0]]?.get('displayCriteria')?.get('comparisonQuestion')?.get(Object.keys(question.controls[Object.keys(question.controls)[0]]?.get('displayCriteria')?.get('comparisonQuestion')?.controls || {})[0])?.get('id')?.value || question.controls[Object.keys(question.controls)[0]]?.get('displayCriteria')?.get('comparisonQuestion')?.get(Object.keys(question.controls[Object.keys(question.controls)[0]]?.get('displayCriteria')?.get('comparisonQuestion')?.controls || {})[0])?.get('tempId')?.value || null" (change)="changeComparisonQuestion(categoryIndex, questionIndex, comparisonQuestion.value)" #comparisonQuestion *bootstrapSelect="getQuestionSelectCollection(getPromotionQuestions(categoryIndex, null, (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value) ))">
+                                              <ng-container *ngFor="let item of getPromotionQuestions(categoryIndex, null, (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value) ); let i = index">
+                                                <option [value]="''+(item.controls[Object.keys(item.controls)[0]].controls.id?.value || item.controls[Object.keys(item.controls)[0]].controls.tempId?.value)" [attr.selected]="
+                                                (!question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.value && i == 0) || 
+                                                (
+                                                  (
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls[Object.keys(question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls)[0]]?.controls?.id?.value || 
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls[Object.keys(question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls)[0]]?.controls?.tempId?.value
+                                                  ) &&
+                                                  !getPromotionQuestionById(
+                                                    category?.controls?.id?.value || category?.controls?.tempId?.value, 
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls[Object.keys(question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls)[0]]?.controls?.id?.value || 
+                                                    question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls[Object.keys(question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion?.controls)[0]]?.controls?.tempId?.value
+                                                  )?.question
+                                                )
+                                                 ? 
+                                                replaceFormControl(question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion, getShortPromotionQuestion( item.value, true), 'comparisonQuestion')
+                                                : null">
+                                                  <!--replaceFormControl(...) ==> manageFormControl((item.controls[Object.keys(item.controls)[0]].controls.id?.value || item.controls[Object.keys(item.controls)[0]].controls.tempId?.value), question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonQuestion)-->
+                                                  {{item.controls[Object.keys(item.controls)[0]].controls.title.value}}
+                                                </option>
+                                              </ng-container>
+                                            </select>
+                                            <span>is</span>
+                                            <span>
+                                              <select class="form-control" name="comparisonType_question_{{categoryIndex}}_{{questionIndex}}" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonType?.value" formControlName="comparisonType" *bootstrapSelect>
+                                                <option value="empty" [selected]="!question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonType?.value">Empty</option>
+                                                <option value="notEmpty">Not Empty</option>
+                                                <option value="equalTo">Equal To</option>
+                                                <option value="notEqualTo">Not Equal To</option>
+                                                <option value="lessThan">Less Than</option>
+                                                <option value="greaterThan">Greater Than</option>
+                                                <option value="inList">In List</option>
+                                                <option value="notInList">Not In List</option>
+                                                <option value="contains">Contains</option>
+                                                <option value="doesNotContain">Does Not Contain</option>
+                                                <option value="matches">Matches</option>
+                                              </select>
+                                            </span>
+                                            <input type="text" class="form-control" name="value" *ngIf="!['empty', 'notEmpty'].includes(question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonType?.value)" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.displayCriteria?.controls?.comparisonValue?.value" formControlName="comparisonValue">
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+
+                                    <div class="radio col" *ngIf="['dateQuestion'].includes(Object.keys(question.controls)[0])">
+                                      <label style="flex-wrap: wrap;">
+                                        <input type="radio" name="display_question_{{categoryIndex}}_{{questionIndex}}" value="never" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.display">
+                                        <span class="title">Never</span>
+                                        <div class="radio-menu-container" style="width:100%; padding-top:5px; margin-left: 18px;" *ngIf="question.controls[Object.keys(question.controls)[0]]?.controls?.display.value == 'never' && getPromotionQuestions(categoryIndex, 'dateQuestion', (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value)).length">
+                                          <div class="radio-menu-item col" style="padding: 0px;">
+                                            <span>Value is same as</span>
+                                            <span>
+                                              <select class="form-control" name="sameValueAs_question_{{categoryIndex}}_{{questionIndex}}" formControlName="sameValueAs" *bootstrapSelect="getQuestionSelectCollection(getPromotionQuestions(categoryIndex, 'dateQuestion', (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value)))">
+                                                <ng-container *ngFor="let item of getPromotionQuestions(categoryIndex, 'dateQuestion', (question.controls[Object.keys(question.controls)[0]]?.controls?.id?.value || question.controls[Object.keys(question.controls)[0]]?.controls?.tempId?.value)); let i = index">
+                                                  <option [ngValue]="item.controls['dateQuestion'].controls?.id?.value || item.controls['dateQuestion'].controls?.tempId?.value" [attr.selected]="(question.controls['dateQuestion']?.controls?.sameValueAs?.value == (item.controls['dateQuestion'].controls?.id?.value || item.controls['dateQuestion'].controls?.tempId?.value)) || ((!question.controls['dateQuestion']?.controls?.sameValueAs?.value && i == 0) ? manageFormControl((item.controls['dateQuestion'].controls?.id?.value || item.controls['dateQuestion'].controls?.tempId?.value), question.controls['dateQuestion']?.controls?.sameValueAs): null)">
+                                                    {{item.controls['dateQuestion'].controls.title.value}}
+                                                  </option>
+                                                </ng-container>
+                                              </select>
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+
+                                  </div>
+                                </div>
+
+                                <div class="col form-group" *ngIf="['dateQuestion', 'multiChoiceQuestion'].includes(Object.keys(question.controls)[0])">
+                                  <label>Reporting:</label>
+                                  <div class="radio-menu" formGroupName="tags">
+                                    <div class="radio col" *ngIf="Object.keys(question.controls)[0] == 'dateQuestion'">
+                                      <label class="glyphicon-checkbox glyphy" style="min-width: auto;">
+                                        <input type="checkbox" name="isAttendanceDate_question_{{categoryIndex}}_{{questionIndex}}" (change)="checkboxFormControlHandler(question.controls[Object.keys(question.controls)[0]]?.controls?.tags?.controls?.isAttendanceDate, true, false)" [attr.checked]="question.controls[Object.keys(question.controls)[0]]?.controls?.tags?.controls?.isAttendanceDate?.value || null">
+                                        <span class="label-text">Is Attendance Date</span>
+                                      </label>
+                                    </div>
+                                    <div class="radio col">
+                                      <label class="glyphicon-checkbox glyphy" style="min-width: auto;">
+                                        <input type="checkbox" name="addsToAttendeeCount_question_{{categoryIndex}}_{{questionIndex}}" (change)="checkboxFormControlHandler(question.controls[Object.keys(question.controls)[0]]?.controls?.tags?.controls?.addsToAttendeeCount, true, false); updateValidators(question.controls[Object.keys(question.controls)[0]]?.controls?.attendeeCountIncrement)" [attr.checked]="question.controls[Object.keys(question.controls)[0]]?.controls?.tags?.controls?.addsToAttendeeCount?.value || null">
+                                        <span class="label-text">Adds</span>
+                                        <div class="radio-menu-container mt-0">
+                                          <div class="radio-menu-item col">
+                                            <input type="number" name="attendeeCountIncrement_question_{{categoryIndex}}_{{questionIndex}}" [formControl]="question.controls[Object.keys(question.controls)[0]]?.controls?.attendeeCountIncrement" [attr.min]="question.controls[Object.keys(question.controls)[0]]?.controls?.tags?.controls?.addsToAttendeeCount?.value ? 1 : 0" [value]="question.controls[Object.keys(question.controls)[0]]?.controls?.attendeeCountIncrement?.value" class="form-control sm" [attr.disabled]="!question.controls[Object.keys(question.controls)[0]]?.controls?.tags?.controls?.addsToAttendeeCount?.value ? true : null">
+                                            <span>to Attendee Count</span>
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            </div>
+                            <div class="controls col-1 col-auto ps-1">
+                              <i class="glyphicon glyphicon-menu-hamburger drag"></i>
+                              <button type="button" class="glyphicon glyphicon-minus-sign remove" (click)="removeFormArrayControl(promotionDataGroup.controls?.categories.controls[categoryIndex].controls.questions, questionIndex)" [disabled]="promotionDataGroup.controls?.categories.controls[categoryIndex].controls.questions.length == 1"></button>
+                              <button type="button" class="glyphicon glyphicon-plus-sign add" (click)="addFormArrayControl(promotionDataGroup.controls?.categories.controls[categoryIndex].controls.questions)" [disabled]="promotionDataGroup.controls?.categories.controls[categoryIndex].controls.questions.invalid"></button>
+                            </div>
+                          </div>
+
+                        </div>
+                        <!--end questions-->
+                      </div>
+                      <div class="tab-content-placeholder">Please add an Promotion category to display Promotion
+                        Questions.</div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+            </div>
+            <div class="panel-footer">
+              <div class="float-end gap-3 d-flex">
+                <button type="button" id="cancel" (click)="cancelPromotion()" class="btn btn-default">Cancel</button>
+                <button type="button" id="save-promotion" class="btn btn-success" (click)="savePromotion()" [disabled]="!promotionDataGroup.valid">Save Promotion</button>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="col-offset-700 col-md">
+        <div class="panel panel-dark">
+          <div class="panel-heading">
+            <h3 class="panel-title">Preview</h3>
+          </div>
+          <div id="previewPanel" class="panel-body form-inline d-flex flex-column">
+            <div id="promotionDisplay">
+              <div class="container-md p-0">
+                <!-- Content -->
+                <!-- <app-preview [previewTemplate]="previewTemplate" [promotionData]="bufferPromotionData"></app-preview> -->
+                <!-- <div
+                  securepay-preview
+                  [config]="bufferPromotionData"
+                  (templateUpdated)="onTemplateUpdated($event)"
+                  (templateSubmit)="onTemplateSubmit($event)">
+                </div> -->
+                <ng-container *ngIf="true">
+                  <table id="promotion" securepay-preview [config]="bufferPromotionData" [previewTemplate]="previewTemplate" 
+                  [morphing]="true" [saveInputStates]="true"
+                  (templateUpdated)="onTemplateUpdated($event)" (templateSubmit)="onTemplateSubmit($event)">
+                    <tbody>
+                      <tr>
+                        <td height="150" class="content-cell" style="padding:15px;">
+                          <!--<div style="width:150px; height:50px; background:url([-logoURL-])"></div>-->
+                          <img class="promotion-image top10 bottom20" alt="Atlantis The Palm" title="Atlantis The Palm" data-src="[-logoURL-]">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell" style="padding:0 15px; text-align: center;">
+                          <p>
+                            <span class="promotion-title text-center" style="font-weight:bold;">[-name | No title-]</span>
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell" style="padding:0 15px;"> <span class="promotion-text">[-promotionText-]</span> </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell " style="padding:0 15px;"> [-previewOptions-] </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell" style="padding:0 15px;">
+                          <p> <b class="counter-list total"> <span class="key">Total To Pay</span><span class="dots"></span><span class="value"><span class="parameter_currency">[-hotel.currency-]</span> <span class="parameter_amount">[-amount-]</span></span> </b> </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell" style="padding:0 15px;">
+                          <p class="top20"> <label class="glyphicon-checkbox glyphy"> <input type="checkbox" name="acceptT&C"> <span class="label-text">I accept the [-hotel.name-]&nbsp;<a class="termsAndConditionsLink">Terms &amp; Conditions of Payment</a>.</span> </label> </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell" style="text-align:center; padding:0 15px;"> <a href="https://securepay-demo.test.securepay.ae/prepay/[-uuid-]" class="Button payPreAuthButton btn btn-success btn-sm disabled"> Pay <span class="parameter_currency">[-hotel.currency-]</span>&nbsp;<span class="parameter_amount">[-amount-]</span> </a> </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell" style="padding:0 15px;">
+                          <p> For any enquiries, or if you have any concerns about the authenticity of this email, please contact the <span class="contact">[-contactName-]</span> at SecurePay Demo at <a class="email" href="mailto:[-contactEmail-]">[-contactEmail-]</a> or by telephone on <a class="tel" href="tel:[-contactPhone-]">[-contactPhone-]</a>, or see answers to <a href="https://securepay-demo.test.securepay.ae/prepay/[-uuid-]#frequentlyAskedQuestions">Frequently Asked Questions.</a> </p>
+                          <p>Kind Regards,<br>SecurePay Demo</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="content-cell" style="padding:15px;"> <span class="footer-text">[-footerText-]</span> </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-container>
+                <!-- End Content -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/PAGE CONTENT HERE -->
+  </div>
+
+
+</div>

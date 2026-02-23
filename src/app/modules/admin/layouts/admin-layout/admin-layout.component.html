@@ -1,0 +1,159 @@
+<!-- Top Navigation -->
+<nav class="navbar navbar-inverse position-sticky pt-0 pb-0">
+    <div class="container-fluid flex-nowrap flex-column flex-md-row">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand ps-lg-3" [routerLink]="['/admin']"><img src="assets/img/SecurePay_whiteOnTransparent.png"></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse d-md-block ps-lg-3 pe-lg-3">
+            <ul class="nav navbar-nav navbar-right flex-row">
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-hover="dropdown" data-bs-delay="1000" aria-haspopup="true" aria-expanded="false">Payment Requests </a>
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <form id="manualEmailLookupForm" class="lookupForm" role="form">
+                                <label>Name or Ref:</label>
+                                <span class="twitter-typeahead" style="position: relative; display: inline-block;"><input class="typeahead form-control tt-hint" type="text" autocomplete="off" readonly="" spellcheck="false" tabindex="-1" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);" dir="ltr"><input class="typeahead form-control tt-input" type="text" placeholder="eg. Smith..." name="ref" autocomplete="off" spellcheck="false" dir="auto" style="position: relative; vertical-align: top; background-color: transparent;">
+                                    <pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; word-spacing: 0px; letter-spacing: 0px; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre>
+                                    <div class="tt-menu" style="position: absolute; top: 100%; left: 0px; z-index: 100; display: none;">
+                                        <div class="tt-dataset tt-dataset-manualEmailMatches"></div>
+                                    </div>
+                                </span>
+                                <button class="btn btn-dark btn-xs" id="manualEmailLookupSubmit"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                            </form>
+                        </li>
+
+                        <li class="divider afterForm"></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/payment_requests/create']">Create Payment Request</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/payment_requests/import']">Import from File</a></li>
+
+                    </ul>
+                </li>
+
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false">Promotions </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <form id="promotionResponseLookupForm" class="lookupForm" role="form">
+                                <label>Name or Ref:</label>
+                                <span class="twitter-typeahead" style="position: relative; display: inline-block;"><input class="typeahead form-control tt-hint" type="text" autocomplete="off" readonly="" spellcheck="false" tabindex="-1" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1; background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);" dir="ltr"><input class="typeahead form-control tt-input" type="text" placeholder="eg. abc123..." name="responseId" autocomplete="off" spellcheck="false" dir="auto" style="position: relative; vertical-align: top; background-color: transparent;">
+                                    <pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; word-spacing: 0px; letter-spacing: 0px; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre>
+                                    <div class="tt-menu" style="position: absolute; top: 100%; left: 0px; z-index: 100; display: none;">
+                                        <div class="tt-dataset tt-dataset-promotionResponseMatches"></div>
+                                    </div>
+                                </span>
+                                <button class="btn btn-dark btn-xs" id="promotionReferenceLookupSubmit"><span class="glyphicon glyphicon-chevron-right"></span></button>
+                            </form>
+                        </li>
+                        <li class="divider afterForm"></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/promotions/new_promotion']">New Promotion</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/promotions/promotion_management']">Promotion Mgmt.</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false">Monitoring </a>
+                    <ul class="dropdown-menu">
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/monitoring/workflow_queue']">Workflow Queue</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/monitoring/api_usage']">API Usage</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false">Reports</a>
+                    <ul class="dropdown-menu">
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/reports/payment_transactions']">Payment Transactions</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/reports/payment_requests_sent']">Payment Requests Sent</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/reports/emails_sent']">Emails Sent</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/reports/user_activity']">User Activity</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/reports/daily_activity_summary']">Daily Activity Summary</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/reports/payments_api_summary']">Payments API Summary</a></li>
+                    </ul>
+                </li>
+
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false">Configuration </a>
+                    <ul class="dropdown-menu">
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/user_management']">User Management</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/group_management']">Group Management</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/email_configuration']">Email Config.</a></li>
+                    </ul>
+                </li>
+
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false">Admin </a>
+                    <ul class="dropdown-menu">
+
+                        <li class="dropdown-submenu">
+                            <a data-toggle="dropdown" data-hover="dropdown" aria-haspopup="true" aria-expanded="false">Reports <span class="caret-left"></span></a>
+                            <ul class="dropdown-menu">
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/reports/internal/all_payments']">All Payments</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/reports/internal/payment_statistics']">Payment Statistics</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/reports/internal/daily_statistics']">Daily Statistics</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/reports/internal/sms_messages_sent']">SMS Messages Sent</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown-submenu">
+                            <a data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false">Configuration <span class="caret-left"></span></a>
+                            <ul class="dropdown-menu">
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/internal/workflows']">Workflow Config.</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/internal/email']">Email Config.</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/internal/booking_com_credentials']">Booking.com</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/internal/payment_processors']">Payment Processors</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/configuration/internal/settings']">Settings</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="divider"></li>
+                        <li class="dropdown-submenu">
+                            <a data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false">Messaging <span class="caret-left"></span></a>
+                            <ul class="dropdown-menu">
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/messaging/internal/customer_messaging']">Customer Messaging</a></li>
+                                <li routerLinkActive="active"><a [routerLink]="['/admin/messaging/internal/on_page_messaging']">On-Page Messaging</a></li>
+                            </ul>
+                        </li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/functionality_management']">Functionality Mgmt.</a></li>
+
+                    </ul>
+
+
+                </li>
+                <li class="dropdown">
+                    <a data-bs-toggle="dropdown" data-bs-hover="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user liveChatEnabled"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class="liveChat"><a href="javascript:void(Tawk_API.toggle())" class="liveChatEnabled">Live Chat</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/help']">Help &amp; FAQ's</a></li>
+                        <li routerLinkActive="active"><a [routerLink]="['/admin/user/change_password']">Change Password</a></li>
+                        <li><a id="logout" [routerLink]="['/login']">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div id="wrapper">
+
+    <!-- Page Content -->
+    <router-outlet></router-outlet>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid">
+        <p class="hotelName float-start">SecurePay Demo<span id="footerHotelTime"> - {{currentDate}}</span></p>
+        <p class="float-end">©<span class="copyrightDate">2020</span> SecurePay</p>
+    </div>
+</footer>

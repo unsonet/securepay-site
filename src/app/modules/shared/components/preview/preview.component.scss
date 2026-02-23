@@ -1,0 +1,678 @@
+/* CSS for SecurePay Promotion display*/
+:host ::ng-deep {
+    @import url("https://fonts.googleapis.com/css?family=Open+Sans");
+
+    //:root {
+    --promotion-background-color: #fff;
+    --promotion-highlight-color: yellow;
+    //}
+    #promotion {
+        // background: var(--promotion-background-color);
+        padding: 10px;
+        width: 100%;
+        display: block;
+    }
+    #promotion table,
+    #promotion thead,
+    #promotion tbody,
+    #promotion tfoot,
+    #promotion tr,
+    #promotion th,
+    #promotion td {
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-collapse: inherit;
+        border-spacing: 0;
+        border-color: inherit;
+        vertical-align: inherit;
+        font-weight: inherit;
+        -webkit-border-horizontal-spacing: 0;
+        -webkit-border-vertical-spacing: 0;
+    }
+
+    #promotion table,
+    #promotion > table > tr > td {
+        /*width: initial;*/
+        border: none;
+        padding: 0px;
+        font-size: 13px !important;
+    }
+    #promotion table {
+        width: 100%;
+        font-family: "Open Sans", sans-serif !important;
+        line-height: 1.5;
+        font-size: 13px;
+    }
+    #promotion p {
+        margin: 1em 0;
+        padding: 0;
+    }
+    #promotion th,
+    #promotion td {
+        word-break: break-word;
+        padding: 2px 0px;
+    }
+
+    #promotion tfoot th b,
+    #promotion #previewTaxes th b {
+        margin-top: 0.5em;
+        display: block;
+    }
+
+    #promotion input[type="checkbox"],
+    #promotion input[type="radio"] {
+        margin-left: 0;
+        margin-bottom: 0;
+        margin-top: 0;
+        margin-right: 5px;
+    }
+
+    #promotion .form-control {
+        width: 100%;
+    }
+    #promotion .formButton,
+    #promotion .form-control:not(textarea):not([multiple]):not(div),
+    #promotion .bootstrap-select .form-control {
+        height: 30px;
+        padding-top: 4px;
+        padding-bottom: 3px;
+    }
+    #promotion .bootstrap-select.form-control {
+        height: 30px;
+    }
+    #promotion .bootstrap-select select {
+        min-width: -webkit-fill-available !important;
+    }
+    #promotion textarea.form-control {
+        min-height: 35px;
+    }
+    #promotion .checkbox label,
+    #promotion .radio label {
+        padding-left: 0;
+    }
+
+    #promotion img[data-src] {
+        display: none;
+    }
+
+    #promotion .category {
+        margin-top: 1em;
+    }
+    #promotion .promotion-text p {
+        margin-bottom: 0;
+    }
+    #promotion .promotion-text > p {
+        margin-top: 0;
+    }
+    #promotion .title {
+        margin: 0.5em 0;
+    }
+    #promotion h4.promotion-title {
+        padding-top: 15px;
+        text-align: center;
+    }
+
+    #promotion .date-information {
+        padding: 0px;
+    }
+    #promotion .date-information li:first-child:before {
+        content: "Note";
+        font-weight: bold;
+    }
+    #promotion .rotatePhoneMessage {
+        display: none !important;
+    }
+
+    .notification {
+        font-size: smaller;
+        text-align: justify;
+        white-space: unset;
+        white-space: normal;
+        padding-left: 0.8em !important;
+        padding-right: 0.5em !important;
+        position: relative;
+    }
+
+    .notification:before {
+        left: 0;
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        content: "*";
+    }
+
+    #promotion a {
+        cursor: pointer;
+    }
+    #promotion a.remove {
+        color: #000;
+        text-decoration: none;
+    }
+    #promotion a.emailButtonLink {
+        cursor: default;
+    }
+
+    #promotion input {
+        max-width: 13em;
+    }
+
+    #promotion input::-webkit-outer-spin-button,
+    #promotion input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    #promotion input[type="number"] {
+        width: 3em;
+        padding-right: 5px;
+        -moz-appearance: textfield;
+    }
+
+    #promotion label {
+        position: relative;
+        font-weight: normal;
+    }
+
+    #promotion label > input[type="number"] ~ .parameter_amount:last-child:after {
+        /* content:'each';*/
+        /* padding-left:5px;*/
+    }
+    #promotion label > input[type="number"] ~ .parameter_amount.clear-after-content:last-child:after {
+        content: "";
+    }
+
+    #promotion label > input,
+    #promotion label > select {
+        /* margin: 0!important; */
+        /* margin-right: 5px; */
+    }
+
+    #promotion .line label > *:not(:first-child):not(.label-text) {
+        // margin-left: 5px;
+    }
+
+    #promotion .line label > .glyphicon-checkbox + * {
+        margin-left: 0px;
+    }
+
+    #promotion label input {
+        display: inline-block;
+        width: auto;
+    }
+
+    /* #promotion label input[type=radio],#promotion label input[type=checkbox]  {
+    margin-top: 8px;
+    float: left;
+} */
+    #promotion label {
+        /* line-height: 30px; */
+    }
+
+    #promotion .promotion-image {
+        display: inherit;
+        height: 100%;
+        margin: auto;
+        min-height: 25px;
+        min-width: 25px;
+    }
+
+    #promotion img {
+        min-height: 25px;
+        min-width: 25px;
+    }
+
+    /*counter-list*/
+    #promotion .counter-list {
+        position: relative;
+        /* overflow: hidden; */
+    }
+
+    #promotion .counter-list td {
+        display: flex;
+    }
+
+    #promotion .counter-list:not(td) {
+        display: block;
+    }
+
+    #promotion .promotion-options .options thead td {
+        padding: 0px;
+    }
+
+    #promotion .promotion-options .option p.title,
+    #promotion .promotion-options .option p.description {
+        margin-top: 0px;
+    }
+    #promotion .promotion-options thead p {
+        margin: 0.5em 0;
+    }
+
+    #promotion .promotion-options .counter-list.price .dots {
+        display: none;
+    }
+    #promotion .promotion-options .counter-list.price:last-child .dots,
+    #promotion .promotion-options .counter-list.price.total:last-child .dots {
+        display: block;
+    }
+
+    #promotion .promotion-options .counter-list .key > * {
+        display: flex;
+        gap: 5px;
+        align-items: baseline;
+    }
+
+    #promotion .promotion-options .counter-list .key > * > * {
+        text-wrap-mode: nowrap;
+    }
+
+    #promotion .promotion-options .counter-list .key > * input,
+    #promotion
+        .promotion-options
+        .counter-list
+        .key
+        > *
+        label.glyphicon-checkbox
+        input[type="checkbox"]
+        ~ .label-text:before {
+        margin: 0;
+    }
+
+    // #promotion .counter-list:before,
+    // #promotion .counter-list.total:before
+    #promotion .counter-list .dots,
+    #promotion .counter-list.total .dots {
+        content: "";
+        // position: absolute;
+        // left: 0px;
+        width: 100%;
+        height: 2px;
+        // margin-left: 100%;
+        // margin-left: 15px;
+        margin-bottom: 5px;
+        /* border-top: 1px dotted #666; */
+        background-image: radial-gradient(ellipse, #000 1px, #666 1px, transparent 2px);
+        background-size: 7px 2px;
+        background-repeat: repeat-x;
+        background-position: 0 bottom;
+        align-self: end;
+    }
+
+    #promotion .counter-list.total {
+        place-content: flex-end;
+        display: flex;
+        flex-flow: wrap;
+    }
+
+    #promotion .counter-list.total .dots {
+        order: -1;
+        display: block;
+        margin-left: 0px;
+        padding: 0px;
+        position: relative;
+        top: 0px;
+        background-image: none;
+        border-top: 1px solid #666;
+    }
+
+    #promotion .counter-list.counter-list__hidden .dots {
+        // display: none !important;
+        background-image: none;
+    }
+
+    #promotion .counter-list.counter-list__hidden .value {
+        // display: none !important;
+        visibility: hidden;
+    }
+
+    #promotion .counter-list .key {
+        overflow: hidden;
+        flex: 1;
+        width: 100%;
+        margin: 0;
+        /* max-width: 90%; */
+        display: inline-block;
+        position: relative;
+        padding-right: 5px;
+    }
+    #promotion .counter-list .key > * {
+        /* line-height: 30px; */
+        /* line-height: 22px;*/
+        /* z-index: 1;*/
+        // background: var(--promotion-background-color);
+        margin-bottom: -5px;
+        // padding: 1px 10px 1px 0px;
+        // clip-path: content-box;
+        // position: absolute;
+        /* padding: 1px 0; */
+        width: min-content;
+    }
+
+    #promotion .promotion-options .counter-list.price .value {
+        // display: none;
+        visibility: hidden;
+    }
+
+    #promotion .counter-list.total .value {
+        // bottom: 0px;
+        padding: 0;
+    }
+
+    #promotion .counter-list .value {
+        // position: absolute;
+        // bottom: 3px;
+        // right: 0px;
+        /* z-index: 1;*/
+        // background: var(--promotion-background-color);
+        // padding: 5px 0px 10px 10px;
+        align-self: end;
+        text-wrap-mode: nowrap;
+        padding-left: 5px;
+    }
+
+    #promotion .promotion-options .counter-list.price:last-child .value {
+        // display: block;
+        visibility: visible;
+    }
+
+    #promotion
+        .promotion-options
+        .shaded
+        .key:first-child
+        > *
+        > *:not([type="radio"]):not([type="checkbox"]):not(.glyphicon-checkbox) {
+        opacity: 0.5;
+    }
+    /*end counter-list*/
+
+    #promotion .promotion-options .parameter_currency::before {
+        content: "@ ";
+    }
+
+    #promotion .option tr > td {
+        margin: 0;
+        padding: 0;
+    }
+    #promotion .disabled {
+        opacity: 0.5;
+        cursor: not-allowed !important;
+    }
+    #promotion .disabled * {
+        cursor: not-allowed !important;
+    }
+
+    #promotion .inline-calendar {
+        display: none !important;
+    }
+
+    #promotion p.dates-title {
+        display: grid;
+    }
+
+    #promotion p.dates-title b {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #promotion .date-range-details {
+        white-space: initial;
+        padding: 10px;
+        border: 1px solid rgb(204, 204, 204);
+        background: rgb(243, 243, 243);
+    }
+
+    #promotion .dropdown-content {
+        grid-gap: 10px;
+        display: grid;
+        align-items: center;
+        grid-auto-flow: column;
+    }
+
+    #promotion a.btn.disabled {
+        pointer-events: all;
+    }
+
+    #promotion .has-error .glyphicon-checkbox ~ *,
+    #promotion .has-error input[type="radio"] ~ * {
+        color: #a94442 !important;
+    }
+    #promotion .has-error .glyphicon-checkbox ~ *,
+    #promotion .has-error label {
+        color: #a94442 !important;
+    }
+
+    /*
+#promotion .has-error .datepicker .datepicker--cell-day:not(.-other-month-):not(.-selected-){color:#a94442;}
+#promotion .has-error .datepicker .datepicker--cell-day.-disabled-{color:rgba(169, 68, 66,0.6)!important;} 
+#promotion .has-error .datepicker .datepicker--cell-day.-disabled-.-other-month-{color:rgba(169, 68, 66,0.3)!important;}
+*/
+    #promotion .has-error .datepicker-inline .datepicker {
+        border: 1px solid #a94442;
+    }
+    .datepicker-inline .datepicker {
+        border: 1px solid #cccccc;
+        border-radius: 0;
+        margin: 0px;
+        border-spacing: 0px;
+        box-sizing: border-box;
+    }
+    .datepicker .datepicker--nav {
+        border: 0px !important;
+        border-bottom: 1px solid #cccccc !important;
+    }
+    .datepicker .datepicker--content {
+        border: 0px !important;
+    }
+    .datepicker .datepicker--cell-day.-blocked- {
+        //color:#E87272;
+        color: rgba(169, 68, 66, 0.6);
+    }
+
+    #promotion .btn.form-control {
+        /*border: 1px solid #ccc!important;*/
+    }
+
+    #promotion .highlight {
+        text-decoration: none !important;
+        white-space: nowrap;
+        background-color: var(--promotion-highlight-color) !important;
+        font-family: monospace !important;
+        color: black !important;
+        font-weight: 400 !important;
+        font-size: 14px !important;
+        pointer-events: none !important;
+    }
+
+    #promotion input[name="acceptT&C"] {
+        float: left;
+        margin: 4px 0 0;
+    }
+    #promotion label[for="acceptT&C"] {
+        display: block;
+        padding-left: 1.5em;
+        font-weight: normal;
+    }
+
+    /*glyphicon-checkbox*/
+    label.glyphicon-checkbox {
+        color: #666;
+        cursor: pointer;
+        padding: 0px;
+        margin: 0px;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    label.glyphicon-checkbox input[type="checkbox"] {
+        display: none !important;
+    }
+
+    label.glyphicon-checkbox .label-text {
+        display: flex;
+    }
+
+    label.glyphicon-checkbox .label-text > *:not(:first-child) {
+        margin-left: 5px;
+    }
+
+    label.glyphicon-checkbox input[type="checkbox"] ~ .label-text:before {
+        /* margin-bottom: 2px; */
+        align-self: center;
+        content: "\e014";
+        font-family: "Glyphicons Halflings";
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        /* line-height: 1; */
+        font-smoothing: antialiased;
+        /* width: 1em; */
+        display: inline-block;
+        margin-right: 5px;
+        height: 13px;
+        line-height: 13px;
+    }
+    label.glyphicon-checkbox input[type="checkbox"] ~ .label-text.right:before {
+        padding-right: 0px !important;
+        padding-left: 5px !important;
+    }
+
+    label.glyphicon-checkbox.glyphy input[type="checkbox"] ~ .label-text:before {
+        content: "\e157";
+    }
+
+    label.glyphicon-checkbox input[type="checkbox"]:checked ~ .label-text:before {
+        content: "\e013";
+        -webkit-animation: tick 180ms ease-in;
+        animation: tick 180ms ease-in;
+    }
+
+    label.glyphicon-checkbox.glyphy input[type="checkbox"]:checked ~ .label-text:before {
+        content: "\e067";
+    }
+
+    label.glyphicon-checkbox input[type="checkbox"]:disabled ~ .label-text {
+        color: #aaa;
+    }
+    label.glyphicon-checkbox input[type="checkbox"]:before {
+        content: "";
+        color: #ccc;
+    }
+    /*end glyphicon-checkbox*/
+
+    /* radiobutton */
+    input[type="checkbox"],
+    input[type="radio"] {
+        margin-top: 0px;
+    }
+
+    input[type="radio"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        display: inline-block;
+        width: 13px;
+        min-width: 13px;
+        height: 13px;
+        min-height: 13px;
+        padding: 2px;
+        background-clip: content-box;
+        border: 2px solid #666;
+        background-color: none;
+        border-radius: 50%;
+        margin-top: 1px;
+        outline: none;
+    }
+
+    input[type="radio"]:checked {
+        background-color: #666;
+    }
+
+    /* end radiobutton */
+
+    /*placeholder*/
+    ::-webkit-input-placeholder {
+        /* Chrome */
+        color: #ccc;
+    }
+    :-ms-input-placeholder {
+        /* IE 10+ */
+        color: #ccc;
+    }
+    ::-moz-placeholder {
+        /* Firefox 19+ */
+        color: #ccc;
+        opacity: 1;
+    }
+    :-moz-placeholder {
+        /* Firefox 4 - 18 */
+        color: #ccc;
+        opacity: 1;
+    }
+    /*end placeholder*/
+
+    /*CSS Simple Tooltip*/
+    [data-tooltip] {
+        position: relative;
+        z-index: 2;
+        cursor: pointer;
+    }
+
+    [data-tooltip]:before,
+    [data-tooltip]:after {
+        transition: all 300ms ease 0s;
+        visibility: hidden;
+        //-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+        //filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=0);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    [data-tooltip]:before {
+        white-space: break-spaces;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        margin-bottom: 5px;
+        margin-left: -80px;
+        padding: 7px;
+        width: 160px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        content: attr(data-tooltip);
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    [data-tooltip]:after {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        margin-left: -5px;
+        width: 0;
+        border-top: 5px solid rgba(0, 0, 0, 0.9);
+        border-right: 5px solid transparent;
+        border-left: 5px solid transparent;
+        content: " ";
+        font-size: 0;
+        line-height: 0;
+    }
+
+    [data-tooltip]:hover:before,
+    [data-tooltip]:hover:after {
+        visibility: visible;
+        //-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+        //filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);
+        opacity: 1;
+    }
+    /*end CSS Simple Tooltip*/
+}

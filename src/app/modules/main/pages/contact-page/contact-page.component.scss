@@ -1,0 +1,13 @@
+a:hover { text-decoration: underline; cursor: pointer; }
+		.finePrint { margin-top: 6em; font-size: 0.6em; }
+		h3.sendMessage { margin: 2.5em 0 0.6em; }
+		form .form-group { margin-bottom: 10px; }
+		form label { margin-right: -10px; padding-top: 0.2em !important; font-weight: normal; font-size: calc( 12px + 1.3 * ((100vw - 200px) / 200 )); }
+		form input, form textarea { margin-left: 15px; color: #333; font-size: 0.9em; }
+		form button { margin-left: -10px; }
+		@media (max-width: 767px) {
+			form button { margin-left: 0; }
+		}
+		
+		.sendMessage, form { display: none; }
+		.finePrint { margin-top: 12em; }

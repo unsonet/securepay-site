@@ -1,0 +1,5 @@
+<div *ngIf="!templateReady" class="d-flex align-items-center justify-content-center bg-white position-absolute w-100 h-100" style="z-index: 1; left: 0; top: 0;">
+</div>
+<div [innerHtml]="html | safeHtml" [ngStyle]="{'pointer-events': templateUpdated && templateReady ? 'all' : 'none'}" #preview [attr.templateUpdated]="templateUpdated" [attr.templateReady]="templateReady"></div>
+<div [outerHTML]="templatesHtml | safeHtml"></div>
+

@@ -1,0 +1,7 @@
+{
+    "name": "securepay-site",
+    "version": "1.16.00",
+    "scripts": {
+        "start": "node main.js"
+    }
+}
