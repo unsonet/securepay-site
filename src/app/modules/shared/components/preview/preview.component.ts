@@ -6,7 +6,7 @@ import { AirDatepickerDirective } from '@unsonet/ngx-air-datepicker-directive';
 import { BootstrapSelectDirective } from '@unsonet/ngx-bootstrap-select-directive';
 import { EmailValidators, PhoneValidators } from '@unsonet/ngx-validators';
 
-import { toCamelCase, htmlToFragment, deepCompare, deepMerge, getDates, getEnumValues, getNestedValue, parseRegExpString, getRandomString, escapeHtml, splitFirst, stripHTML, templating, uniqueArr, waitForElement, toKebabCase, normalizeSpaces } from '@unsonet/utils';
+import { toCamelCase, htmlToFragment, deepCompare, deepMerge, getDates, getEnumValues, getNestedValue, parseRegExpString, getRandomString, escapeHtml, splitFirst, stripHTML, templating, uniqueArr, waitForElement, toKebabCase, normalizeSpaces, insertElement } from '@unsonet/js-utils';
 import { checkConditionGeneric } from '../../utils';
 import moment from 'moment';
 import { default as JsonForm } from "@rmanaf/json-form";
@@ -39,8 +39,8 @@ export class PreviewComponent implements OnInit {
   previewElement: Element;
   data: any;
   html: any;
-  htmlChanges: BehaviorSubject<any>;
-  dataChanges: BehaviorSubject<any> = new BehaviorSubject({});
+  htmlChanges$: BehaviorSubject<any>;
+  dataChanges$: BehaviorSubject<any> = new BehaviorSubject({});
   templatesHtml = this.getPreviewFormTemplates();
   previewOptionsHtml = this.getPreviewOptionsHtml();
   editors: Array<any> = [];
@@ -95,7 +95,7 @@ export class PreviewComponent implements OnInit {
     //this.previousPromotionData = this.promotionData;
     this.setCustomJS();
     this.setCustomCSS();
-    this.dataChanges.pipe(debounceTime(10)).subscribe(async (changes) => {
+    this.dataChanges$.pipe(debounceTime(10)).subscribe(async (changes) => {
       if (Object.keys(changes).includes('promotionData')) {
         this.templatePending = true;
         //this['previousPromotionData'] = changes['promotionData'].previousValue;
@@ -110,8 +110,8 @@ export class PreviewComponent implements OnInit {
         //console.log('ERROR',error)
       }
     });
-    this.htmlChanges = new BehaviorSubject(this.html);
-    this.htmlChanges.pipe(debounceTime(10)).subscribe(async (model) => {
+    this.htmlChanges$ = new BehaviorSubject(this.html);
+    this.htmlChanges$.pipe(debounceTime(10)).subscribe(async (model) => {
       if (!this.preview.nativeElement.dataset.instanceHash) {
         this.preview.nativeElement.dataset.instanceHash = getRandomString(32);
       }
@@ -150,7 +150,7 @@ export class PreviewComponent implements OnInit {
   }
 
   async ngOnChanges(changes: any) {
-    this.dataChanges.next(changes);
+    this.dataChanges$.next(changes);
   }
 
   async afterHtmlChange() {
@@ -198,8 +198,8 @@ export class PreviewComponent implements OnInit {
           let morphing = this.morphing;
           let triggerChanges = () => {
             var modelEditorElement = (this.preview?.nativeElement?.querySelector("#previewOptionsForm") as HTMLElement);
-            if (this.htmlChanges && modelEditorElement) {
-              this.htmlChanges.next(this.html);
+            if (this.htmlChanges$ && modelEditorElement) {
+              this.htmlChanges$.next(this.html);
             }
           };
 
@@ -372,7 +372,12 @@ export class PreviewComponent implements OnInit {
               container = fragment;
             }
 
-            this.insertTemplatesElement(container);
+            insertElement({
+              subject:container,
+              content: (`<div id="templates-fragment">` + this.templatesHtml + '</div>'),
+              elementUniqueSelector: '#templates-fragment',
+              operation:'before'
+            });
 
             if (morphing) {
               morphdom(this.preview.nativeElement, container, {
@@ -401,20 +406,6 @@ export class PreviewComponent implements OnInit {
       }
     } finally {
       this.isUpdating = false;
-    }
-  }
-
-  insertTemplatesElement(container) {
-    if (this.templatesHtml) {
-      const templatesElementId = 'templates-fragment';
-      const templatesFragment = htmlToFragment(`<div id="${templatesElementId}">` + this.templatesHtml + '</div>');
-      let templatesElement = document.getElementById(templatesElementId);
-      let newTemplatesElement = templatesFragment.firstChild;
-      if (templatesElement) {
-        templatesElement.replaceWith(newTemplatesElement);
-      } else {
-        container.before(newTemplatesElement);
-      }
     }
   }
 
@@ -652,10 +643,11 @@ export class PreviewComponent implements OnInit {
                     //console.log('ERROR',error)
                   }
                 }
-                this.preview.nativeElement?.dispatchEvent(new CustomEvent("template-submit", {
+                let templateSubmitEvent = new CustomEvent("template-submit", {
                   bubbles: true,
                   detail: promotionDetail
-                }));
+                }) as Event;
+                this.preview.nativeElement?.dispatchEvent(templateSubmitEvent);
               };
 
               setEventHandler(item, 'click', payPreAuthButtonClickHandler);

@@ -1,4 +1,4 @@
-import { checkConditionGeneric as _checkConditionGeneric } from "@unsonet/utils";
+import { checkConditionGeneric as _checkConditionGeneric } from "@unsonet/js-utils";
 
 export function filterArray(arr, removeArr) {
   return arr.filter(item => !removeArr.includes(item))

@@ -5,12 +5,12 @@
     		a { display: inline-block; font-size: 0.8em; color: #333; }
     		a:hover { color: #a94442; text-decoration: none; }
 			
-			.panel { border-color: #AFAFAF; }
-			.panel .panel-heading { background-color: black; border-bottom-color: #AFAFAF; }
-			.panel .panel-heading h3 { margin: 0; color: white; }
-			.panel p.errorMessage { margin-top: 0.5em; margin-bottom: 1.5em; color: #a94442; font-weight: normal; }
-			.panel form button { float:right; margin-top: 5px; }
-			.panel .panel-footer { padding: 5px 15px; }
+			.card { border-color: #AFAFAF; }
+			.card .card-header { background-color: black; border-bottom-color: #AFAFAF; }
+			.card .card-header h3 { margin: 0; color: white; }
+			.card p.errorMessage { margin-top: 0.5em; margin-bottom: 1.5em; color: #a94442; font-weight: normal; }
+			.card form button { float:right; margin-top: 5px; }
+			.card .card-footer { padding: 5px 15px; }
 			
 			.glyphy { cursor: pointer; font-weight: normal; }
 			.glyphy input { display: none; }

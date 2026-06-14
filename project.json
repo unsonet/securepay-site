@@ -8,23 +8,16 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/securepay-site/browser",
         "index": "apps/securepay-site/src/index.html",
         "main": "apps/securepay-site/src/main.ts",
-        "polyfills": [
-          "apps/securepay-site/src/polyfills.ts"
-        ],
+        "polyfills": ["apps/securepay-site/src/polyfills.ts"],
         "tsConfig": "apps/securepay-site/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "stylePreprocessorOptions": {
-          "includePaths": [
-            "libs",
-            "node_modules"
-          ]
+          "includePaths": ["libs", "node_modules"]
         },
         "assets": [
           "apps/securepay-site/src/favicon.ico",
@@ -40,12 +33,12 @@
         ],
         "scripts": [
           "node_modules/jquery/dist/jquery.js",
+          "node_modules/summernote/dist/summernote-bs5.min.js",
+          "node_modules/summernote-cleaner/summernote-cleaner.js",
           "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
           "node_modules/bootstrap-select/js/bootstrap-select.js",
           "node_modules/number-format.js/lib/format.min.js",
           "node_modules/rrule/dist/es5/rrule.min.js",
-          "node_modules/summernote/dist/summernote-bs5.min.js",
-          "node_modules/summernote-cleaner/summernote-cleaner.js",
           "node_modules/jquery-ui/ui/widget.js",
           "node_modules/jquery-ui/ui/data.js",
           "node_modules/jquery-ui/ui/scroll-parent.js",
@@ -64,7 +57,10 @@
             "minify": true,
             "inlineCritical": false
           }
-        }
+        },
+        "vendorChunk": false,
+        "commonChunk": false,
+        "namedChunks": false
       },
       "configurations": {
         "production": {
@@ -105,19 +101,7 @@
         },
         "promo": {
           "outputPath": "dist/apps/securepay-site/promo",
-          "main": "apps/securepay-site/src/main.promo.ts",
-          "vendorChunk": false,
-          "commonChunk": false,
-          "optimization": {
-            "scripts": true,
-            "styles": {
-              "minify": true,
-              "inlineCritical": false
-            }
-          },
-          "extractLicenses": false,
-          "sourceMap": false,
-          "namedChunks": false
+          "main": "apps/securepay-site/src/main.promo.ts"
         }
       },
       "defaultConfiguration": "production"
@@ -135,7 +119,8 @@
           "buildTarget": "securepay-site:build:promo"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -148,9 +133,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/securepay-site/jest.config.ts"
       }
@@ -163,9 +146,7 @@
       }
     },
     "server": {
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "executor": "@angular-devkit/build-angular:server",
       "options": {
         "outputPath": "dist/apps/securepay-site/server",
@@ -200,14 +181,13 @@
           "serverTarget": "securepay-site:server:production"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "prerender": {
       "executor": "@angular-devkit/build-angular:prerender",
       "options": {
-        "routes": [
-          "/"
-        ]
+        "routes": ["/"]
       },
       "configurations": {
         "development": {

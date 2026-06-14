@@ -3,19 +3,20 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { environment } from './environments/environment';
-console.log('appName wtf');
+console.log('c1');
 const __non_webpack_require__ = eval('require');
 const { JSDOM } = __non_webpack_require__('jsdom');
-console.log('appName start');
-const appName = environment.appName ?? ((__dirname || '') as any).match(/(?<=[\/\\]apps[\/\\])[\w\-]+(?=[\/\\]{0,1})/gm)?.[0];
+
+const appName = environment.appName ?? ((__dirname || '') as any)?.match(/(?<=[\/\\]apps[\/\\])[\w\-]+(?=[\/\\]{0,1})/gm)?.[0];
 console.log('appName end', appName);
 
 const isDev = process.env.NODE_ENV_SERVER === 'development';
-const distRoot = isDev ? join(process.cwd(), 'dist/apps/'+appName) : join(process.cwd(), 'apps/'+appName);
+const distRoot = join(__dirname, '..');
+const indexHtmlPath = join(distRoot, 'browser', 'index.html');
 
-const indexHtmlPath = join(distRoot,'/browser/index.html');
-console.log('Trying to read', process.env.NODE_ENV_SERVER, indexHtmlPath);
-if (!existsSync(indexHtmlPath)) throw new Error('index.html not found');
+if (!existsSync(indexHtmlPath)) {
+  throw new Error('index.html not found at ' + indexHtmlPath);
+}
 const indexHtml = readFileSync(indexHtmlPath, 'utf8');
 
 const dom = new JSDOM(indexHtml, {
@@ -25,14 +26,25 @@ const dom = new JSDOM(indexHtml, {
 const win = dom.window;
 
 (globalThis as any).window = win;
+(globalThis as any).location = win.location;
 (globalThis as any).document = win.document;
 try {
-  if (!('navigator' in globalThis)) {
-    (globalThis as any).navigator = win.navigator;
+  Object.defineProperty(globalThis, 'navigator', {
+    value: win.navigator,
+    configurable: true,
+  });
+  // if (!('navigator' in globalThis)) {
+  //   (globalThis as any).navigator = win.navigator;
+  // }
+  if (typeof self === 'undefined') {
+    (global as any).self = global;
   }
-} catch {
+} catch (e) {
   // в Node 20+ navigator — getter, пропускаем
+  console.log(e);
 }
+
+
 
 (globalThis as any).WebSocket = require('ws');
 (globalThis as any).XMLHttpRequest = require('xhr2');

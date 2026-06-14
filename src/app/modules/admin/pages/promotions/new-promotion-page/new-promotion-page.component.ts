@@ -6,12 +6,13 @@ import { of } from 'rxjs';
 import { Promotion, RecurrencePeriod } from '@unsonet/securepay-types/promotions';
 // import bootstrap from 'bootstrap';
 import { filterArray } from '../../../../shared/utils';
-import { getDates, getEnumValues, getUrlParameter, isPromise, moveArrayItem, getRandomString, sleep, sortArrayOfObjects, stripHTML, uniqueArr, findMod, toLowerCase } from '@unsonet/utils';
+import { getDates, getEnumValues, getUrlParameter, isPromise, moveArrayItem, getRandomString, sleep, sortArrayOfObjects, stripHTML, uniqueArr, findMod, toLowerCase } from '@unsonet/js-utils';
 import { addFormGroupControl, addToFormArray, checkboxFormArrayHandler, checkboxFormControlHandler, cloneAbstractControl, compareByID, filterControls, getFormControlName, getRawValueDeep, manageFormControl, manageFormControls, removeFormArrayControl, removeFormGroupControl, removeFromFormArray, renameFormControl, replaceFormControl, switchFormArray } from '@unsonet/ngx-utils';
 import moment from 'moment';
 import { PreviewComponent } from '@unsonet/securepay-preview';
 import { DayOfWeek } from '@unsonet/securepay-types';
 import { ArrayValidators, CommonValidators, DateValidators, ObjectValidators, PhoneValidators, RegExpValidators } from '@unsonet/ngx-validators';
+import { MediaService } from '@unsonet/ngx-media-service';
 //import * as $ from 'jquery';
 import jq from '@unsonet/jquery-importer';
 var $: JQueryStatic = (jq as any).default || (globalThis as any).$;
@@ -164,10 +165,11 @@ export class NewPromotionPageComponent implements OnInit, AfterContentInit, Afte
     public promotionService: PromotionService,
     private cdr: ChangeDetectorRef,
     @Inject('rrule') private rrule: any,
+    private mediaService: MediaService
   ) {
   }
 
-  async ngAfterViewInit() {
+  ngAfterViewInit() {
 
     if (!this.init) {
       this.init = !this.init;
@@ -183,28 +185,31 @@ export class NewPromotionPageComponent implements OnInit, AfterContentInit, Afte
         }
       });
 
-      if (window.parent) {
-        let promootionInitEvent = new Event("promotion-init", { bubbles: true });
-        document.dispatchEvent(promootionInitEvent);
-        window.parent.postMessage({ "action": "promotion-init" }, "*");
-      }
+      if (this.mediaService.isBrowser) {
+        if (window?.parent) {
+          let promootionInitEvent = new Event("promotion-init", { bubbles: true });
+          document.dispatchEvent(promootionInitEvent);
+          window.parent.postMessage({ "action": "promotion-init" }, "*");
+        }
 
-      let isIframe = getUrlParameter(location.href, "iframe", true)?.toLowerCase()?.trim() == 'true';
-      //if (!isIframe) {
-      this.initNewPromotionPage();
-      //}
+        let isIframe = getUrlParameter(location.href, "iframe", true)?.toLowerCase()?.trim() == 'true';
+        //if (!isIframe) {
+        this.initNewPromotionPage();
+        //}
+      }
 
     }
 
     //this.cdr.detectChanges();
+    if (this.mediaService.isBrowser) {
+      let initScrollInterval = setInterval(() => {
+        if (document.querySelector('#promotionDisplay')) {
+          this.initStickyScroll();
 
-    let initScrollInterval = setInterval(() => {
-      if (document.querySelector('#promotionDisplay')) {
-        this.initStickyScroll();
-
-        clearInterval(initScrollInterval)
-      }
-    }, 100)
+          clearInterval(initScrollInterval)
+        }
+      }, 100)
+    }
 
   }
 
@@ -804,8 +809,7 @@ export class NewPromotionPageComponent implements OnInit, AfterContentInit, Afte
   }
 
   buildArrayControl(options: { formArray, data?: any[] | null, path?: string }): AbstractControl[] {
-    let { formArray = null, data, path } = options || {}
-    this.console.log('formArray', formArray);
+    let { formArray = null, data, path } = options || {};
     var formBuilder = this.formBuilder;
     let pathParts = path ? path.split('.') : [];
     let formControlName = pathParts.length ? pathParts[pathParts.length - 1] : getFormControlName(formArray);
@@ -813,7 +817,6 @@ export class NewPromotionPageComponent implements OnInit, AfterContentInit, Afte
 
     switch (true) {
       case ((formArray === ((this.promotionDataGroup?.controls?.promotionDates as FormGroup)?.controls?.staticDates as FormGroup)?.controls?.dates) || (formControlParentName == "dates")): {
-        this.console.log('WTF', ((formArray === ((this.promotionDataGroup?.controls?.promotionDates as FormGroup)?.controls?.staticDates as FormGroup)?.controls?.dates) || (formControlParentName == "dates")))
         return data ?
           data.map(x => {
             return new FormControl(x, [Validators.required, DateValidators.isDate(this.datePattern)]);
@@ -1500,7 +1503,7 @@ export class NewPromotionPageComponent implements OnInit, AfterContentInit, Afte
   savePromotion() {
     if (this.promotionDataGroup.valid) {
       let data = { promotion: PreviewComponent.getDefaultPromotionData((PreviewComponent.getFormattedPromotionData(this.bufferPromotionData) as any)) };
-      let promootionSaveEvent = new CustomEvent("promotion-save", { bubbles: true, detail: data });
+      let promootionSaveEvent = new CustomEvent("promotion-save", { bubbles: true, detail: data }) as Event;
       document.dispatchEvent(promootionSaveEvent);
       window.parent.postMessage({ "action": "promotion-save", data: data }, "*");
       // this.promotionService.sendPromotionData(data).subscribe(response=>{

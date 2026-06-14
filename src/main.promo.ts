@@ -4,7 +4,7 @@
 import { AppModule } from './app/app.module';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { environment } from './environments/environment';
-import { enableProdMode, InjectionToken } from '@angular/core';
+import { enableProdMode, InjectionToken, provideZoneChangeDetection } from '@angular/core';
 import { PROMO_MODE } from './app/tokens';
 
 // bootstrapApplication(AppComponent, appConfig).catch((err) =>
@@ -18,5 +18,5 @@ if (environment.production) {
 platformBrowserDynamic([
   { provide: PROMO_MODE, useValue: true }
 ])
-  .bootstrapModule(AppModule)
+  .bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection()], applicationProviders: [object Object],})
   .catch(err => console.error(err));

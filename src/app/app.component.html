@@ -2,9 +2,8 @@
 <!-- /<app-new-promotion-page></app-new-promotion-page> -->
 <!--don't forget to use url parameter ?iframe=false-->
 
-<ng-container *ngIf="isPromo; else normalApp">
-    <app-new-promotion-page></app-new-promotion-page>
-</ng-container>
-<ng-template #normalApp>
-    <router-outlet></router-outlet>
-</ng-template>
+@if (isPromo) {
+  <app-new-promotion-page></app-new-promotion-page>
+} @else {
+  <router-outlet></router-outlet>
+}

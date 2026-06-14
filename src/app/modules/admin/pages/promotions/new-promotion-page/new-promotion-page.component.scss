@@ -203,13 +203,13 @@ textarea[disabled] { resize:none; }
 
 .glyphy { cursor: pointer; }
 .glyphy input[type="checkbox"], .glyphy input[type="radio"] { display: none; }
-.panel:last-child {margin-bottom: 0px;}
+.card:last-child {margin-bottom: 0px;}
 .top15 { margin-top: 15px !important; }
 .top20 { margin-top: 20px !important; }
 .bottom15 { margin-bottom: 15px !important; }
 .bottom20 { margin-bottom: 20px !important; }
 
-.panel {
+.card {
     height: 100%;
     flex-direction: column;
     display: flex;

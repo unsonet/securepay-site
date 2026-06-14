@@ -8,9 +8,11 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": false,
     "strictPropertyInitialization": false,
-    "allowSyntheticDefaultImports":true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "esModuleInterop": false
+    "esModuleInterop": false,
+    "moduleResolution": "bundler",
+    "module": "preserve"
   },
   "files": [],
   "include": [],

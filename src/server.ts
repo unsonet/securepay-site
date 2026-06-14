@@ -1,19 +1,24 @@
 import 'zone.js/node';
 import { APP_BASE_HREF } from '@angular/common';
 import { CommonEngine } from '@angular/ssr/node';
-import * as express from 'express';
+import express from 'express';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import bootstrap from './main.server';
 import { parse as ptreParse } from 'path-to-regexp';
 import { environment } from './environments/environment';
+import { regExpPatterns } from '@unsonet/js-utils';
 
 /**
  * Роутер для интеграции в другой сервер (например, unsonet-server).
  */
 export function createAngularRouter(distFolderOverride?: string) {
   const router = express.Router();
-  const appName = environment.appName ?? ((__dirname || '') as any).match(/(?<=[\/\\]apps[\/\\])[\w\-]+(?=[\/\\]{0,1})/gm)[0];
+  const appName =
+    environment.appName ??
+    ((__dirname || '') as any)?.match(
+      /(?<=[\/\\]apps[\/\\])[\w\-]+(?=[\/\\]{0,1})/gm,
+    )?.[0];
   const distFolder =
     distFolderOverride || join(process.cwd(), `dist/apps/${appName}/browser`);
   const indexHtml = existsSync(join(distFolder, 'index.original.html'))
@@ -40,12 +45,19 @@ export function createAngularRouter(distFolderOverride?: string) {
       });
 
       const fixedHtml = html
-        .replace(/<base href="[^"]*">/, `<base href="${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}">`) // 🧩 PATCH #1: <base href>
-        .replace(/href="(?:\.\/)?favicon\.ico"/g, `href="${baseUrl}/favicon.ico"`) // 🧩 PATCH #2: favicon.ico
+        .replace(
+          regExpPatterns.baseHtmlElement,
+          `<base href="${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}">`,
+        ) // 🧩 PATCH #1: <base href>
+        .replace(
+          /href="(?:\.\/)?favicon\.ico"/g,
+          `href="${baseUrl}/favicon.ico"`,
+        ) // 🧩 PATCH #2: favicon.ico
         .replace(/media="print"/g, 'media="all"'); // 🧩 PATCH #3: media="print" → media="all"
 
       res.send(fixedHtml);
     } catch (err) {
+      console.log('indexHtmlErr', err);
       next(err);
     }
   });
@@ -78,15 +90,14 @@ export function app(): express.Express {
     };
   }
 
-  ['route', 'get', 'post', 'put', 'delete', 'patch', 'all', 'use'].forEach(n =>
-    wrapParseCheck(app, n)
+  ['route', 'get', 'post', 'put', 'delete', 'patch', 'all', 'use'].forEach(
+    (n) => wrapParseCheck(app, n),
   );
 
-  const routerProto =
-    express.Router && (express.Router as any).prototype;
+  const routerProto = express.Router && (express.Router as any).prototype;
   if (routerProto) {
-    ['route', 'get', 'post', 'put', 'delete', 'patch', 'all', 'use'].forEach(n =>
-      wrapParseCheck(routerProto, n)
+    ['route', 'get', 'post', 'put', 'delete', 'patch', 'all', 'use'].forEach(
+      (n) => wrapParseCheck(routerProto, n),
     );
   }
 
@@ -98,9 +109,7 @@ function run(): void {
   const port = process.env['PORT'] || 4000;
   const server = app();
   server.listen(port, () => {
-    console.log(
-      `Angular SSR standalone listening on http://localhost:${port}`
-    );
+    console.log(`Angular SSR standalone listening on http://localhost:${port}`);
   });
 }
 

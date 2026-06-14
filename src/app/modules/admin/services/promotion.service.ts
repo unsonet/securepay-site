@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 //import * as defaultPromotionData from "../../../../assets/data/defaultPromotionData.json";
 //import * as initialisationData from "../../../../assets/data/initialisationData.json";
-import { normalizeUrl, validURL, templating, toLowerCase } from '@unsonet/utils';
+import { normalizeUrl, validURL, templating, toLowerCase } from '@unsonet/js-utils';
 import { lastValueFrom, Observable, throwError } from 'rxjs';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class PromotionService {
   //public initialPromotionData;
   public initialisationData;
 
-  private normalizedBaseApiUrl = location.href;
+  private normalizedBaseApiUrl = (globalThis as any)?.location?.href || '';
 
   ApiEndpoins: {
     baseApiHost: string,
@@ -20,7 +20,7 @@ export class PromotionService {
     hotelDataUrl: string,
     submitPromotionUrl: string
   } = {
-      baseApiHost: new URL(this.normalizedBaseApiUrl).host,
+      baseApiHost: this.normalizedBaseApiUrl ? new URL(this.normalizedBaseApiUrl).host : '',
       promotionDataUrl: '',
       hotelDataUrl: '',
       submitPromotionUrl: '',

@@ -3,12 +3,9 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": [],
+    "moduleResolution": "bundler"
   },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts",
-    "src/main.promo.ts"
-  ],
+  "files": ["src/main.ts", "src/polyfills.ts", "src/main.promo.ts"],
   "include": ["src/**/*.d.ts"],
   "exclude": ["jest.config.ts", "src/**/*.test.ts", "src/**/*.spec.ts"]
 }
